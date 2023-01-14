@@ -1,13 +1,12 @@
 const mysql = require('mysql2/promise');
 const {logger} = require('./winston');
 
-// TODO: 본인의 DB 계정 입력
 const pool = mysql.createPool({
-    host: '',
-    user: '',
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
     port: '3306',
-    password: '',
-    database: ''
+    password: process.env.DB_PASSWORD,
+    database: process.env.NODE_ENV
 });
 
 module.exports = {

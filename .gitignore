@@ -3,4 +3,3 @@ package-lock.json
 log/*
 .env
 .DS_Store
-config/secret.js

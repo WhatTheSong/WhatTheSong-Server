@@ -1,6 +1,5 @@
 const {logger} = require("../../../config/winston");
 const {pool} = require("../../../config/database");
-const secret_config = require("../../../config/secret");
 const userProvider = require("./userProvider");
 const userDao = require("./userDao");
 const baseResponse = require("../../../config/baseResponseStatus");
@@ -81,7 +80,7 @@ exports.postSignIn = async function (email, password) {
             {
                 userId: userInfoRows[0].id,
             }, // 토큰의 내용(payload)
-            secret_config.jwtsecret, // 비밀키
+            process.env.JWTSECRET, // 비밀키
             {
                 expiresIn: "365d",
                 subject: "userInfo",
