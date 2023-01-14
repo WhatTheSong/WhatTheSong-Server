@@ -3,6 +3,7 @@ const { response } = require("./response")
 const { errResponse } = require("./response")
 const baseResponse = require("./baseResponseStatus");
 
+require('dotenv').config()
 
 const jwtMiddleware = (req, res, next) => {
     // read the token from header or url
