@@ -4,7 +4,7 @@
   "description": "Node.js API Server",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "./node_modules/.bin/eslint .",
     "dev": "NODE_ENV=development nodemon index.js",
     "prod": "NODE_ENV=production nodemon index.js"
   },
@@ -26,5 +26,8 @@
     "nodemon": "^2.0.7",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^4.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.32.0"
   }
 }
