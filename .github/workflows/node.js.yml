@@ -27,9 +27,9 @@ jobs:
     # actions/setup-node: Node.js를 설치한다.
     # run 개념은 명령어를 실행한다. 셸 스크립트와 동일하다.
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
       # npm ci는 npm install과 같은 기능을 수행한다. 자세한 내용은 아래 링크 참조.
