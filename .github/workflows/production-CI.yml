@@ -1,4 +1,4 @@
-name: Node.js CI
+name: production CI
 
 # 구독할 이벤트
 on:
