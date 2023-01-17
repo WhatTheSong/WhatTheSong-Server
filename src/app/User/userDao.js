@@ -1,3 +1,17 @@
+// oauthId로 유저 조회
+async function selectUserOauthId(connection, selectUserOauthIdParams) {
+  const selectOauthIdQuery = `
+                 SELECT * 
+                 FROM User
+                 WHERE oauthProvider = ? AND oauthId = ?;
+                 `;
+  const [userRow] = await connection.query(
+    selectOauthIdQuery,
+    selectUserOauthIdParams
+  );
+  return userRow;
+}
+
 // 모든 유저 조회
 async function selectUser(connection) {
   const selectUserListQuery = `
@@ -51,8 +65,8 @@ async function selectUserPassword(connection, selectUserPasswordParams) {
         FROM UserInfo 
         WHERE email = ? AND password = ?;`;
   const selectUserPasswordRow = await connection.query(
-      selectUserPasswordQuery,
-      selectUserPasswordParams
+    selectUserPasswordQuery,
+    selectUserPasswordParams
   );
 
   return selectUserPasswordRow;
@@ -65,8 +79,8 @@ async function selectUserAccount(connection, email) {
         FROM UserInfo 
         WHERE email = ?;`;
   const selectUserAccountRow = await connection.query(
-      selectUserAccountQuery,
-      email
+    selectUserAccountQuery,
+    email
   );
   return selectUserAccountRow[0];
 }
@@ -80,8 +94,8 @@ async function updateUserInfo(connection, id, nickname) {
   return updateUserRow[0];
 }
 
-
 module.exports = {
+  selectUserOauthId,
   selectUser,
   selectUserEmail,
   selectUserId,
