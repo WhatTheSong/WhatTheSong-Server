@@ -20,99 +20,15 @@ module.exports = {
   }, // ?
 
   //Request error
-  SIGNUP_EMAIL_EMPTY: {
-    isSuccess: false,
-    code: 2001,
-    message: "이메일을 입력해주세요",
-  },
-  SIGNUP_EMAIL_LENGTH: {
-    isSuccess: false,
-    code: 2002,
-    message: "이메일은 30자리 미만으로 입력해주세요.",
-  },
-  SIGNUP_EMAIL_ERROR_TYPE: {
-    isSuccess: false,
-    code: 2003,
-    message: "이메일을 형식을 정확하게 입력해주세요.",
-  },
-  SIGNUP_PASSWORD_EMPTY: {
-    isSuccess: false,
-    code: 2004,
-    message: "비밀번호를 입력 해주세요.",
-  },
-  SIGNUP_PASSWORD_LENGTH: {
-    isSuccess: false,
-    code: 2005,
-    message: "비밀번호는 6~20자리를 입력해주세요.",
-  },
-  SIGNUP_NICKNAME_EMPTY: {
-    isSuccess: false,
-    code: 2006,
-    message: "닉네임을 입력 해주세요.",
-  },
-  SIGNUP_NICKNAME_LENGTH: {
-    isSuccess: false,
-    code: 2007,
-    message: "닉네임은 최대 20자리를 입력해주세요.",
-  },
-
-  SIGNIN_EMAIL_EMPTY: {
-    isSuccess: false,
-    code: 2008,
-    message: "이메일을 입력해주세요",
-  },
-  SIGNIN_EMAIL_LENGTH: {
-    isSuccess: false,
-    code: 2009,
-    message: "이메일은 30자리 미만으로 입력해주세요.",
-  },
-  SIGNIN_EMAIL_ERROR_TYPE: {
-    isSuccess: false,
-    code: 2010,
-    message: "이메일을 형식을 정확하게 입력해주세요.",
-  },
-  SIGNIN_PASSWORD_EMPTY: {
-    isSuccess: false,
-    code: 2011,
-    message: "비밀번호를 입력 해주세요.",
-  },
-
-  USER_USERID_EMPTY: {
-    isSuccess: false,
-    code: 2012,
-    message: "userId를 입력해주세요.",
-  },
   USER_USERID_NOT_EXIST: {
     isSuccess: false,
-    code: 2013,
+    code: 2001,
     message: "해당 회원이 존재하지 않습니다.",
   },
-
-  USER_USEREMAIL_EMPTY: {
+  APPLE_AUTHORIZATION_CODE_EMPTY: {
     isSuccess: false,
-    code: 2014,
-    message: "이메일을 입력해주세요.",
-  },
-  USER_USEREMAIL_NOT_EXIST: {
-    isSuccess: false,
-    code: 2015,
-    message: "해당 이메일을 가진 회원이 존재하지 않습니다.",
-  },
-  USER_ID_NOT_MATCH: {
-    isSuccess: false,
-    code: 2016,
-    message: "유저 아이디 값을 확인해주세요",
-  },
-  USER_NICKNAME_EMPTY: {
-    isSuccess: false,
-    code: 2017,
-    message: "변경할 닉네임 값을 입력해주세요",
-  },
-
-  USER_STATUS_EMPTY: {
-    isSuccess: false,
-    code: 2018,
-    message: "회원 상태값을 입력해주세요",
+    code: 2002,
+    message: "authorizationCode를 입력해주세요.",
   },
 
   // Response error
@@ -153,7 +69,7 @@ module.exports = {
   SERVER_ERROR: { isSuccess: false, code: 4001, message: "서버 에러" },
   SOCIAL_LOGIN_SERVER_ERROR: {
     isSuccess: false,
-    code: 4001,
+    code: 4002,
     message: "소셜 로그인 서버 에러",
   },
 };

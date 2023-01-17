@@ -20,9 +20,8 @@ const authApple = new apple(
     `../../../config/appleOauth/${process.env.APPLE_PRIVATE_KEY_PATH}`
   )
 );
-
-/* 대체 예정 */
-const crypto = require("crypto");
+const uuid = require("uuid-with-v6");
+const { createJwt } = require("../../../config/token");
 
 exports.oauthAppleLogin = async function (authorizationCode) {
   try {
@@ -30,143 +29,43 @@ exports.oauthAppleLogin = async function (authorizationCode) {
     const idToken = jwt.decode(accessToken.id_token);
     const { email, sub } = idToken;
 
-    //TODO: find or create 계정
+    // oauthId로 유저 조회
     const selectUserOauthIdParams = [1, sub];
-    const userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+    let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+
+    // user가 조회되지 않으면, 계정 생성
     if (!userRow) {
-      //TODO: 계정 생성
       const rememberMeToken = uuid.v6(); // uuid-with-v6 사용해서 rememberMeToken 생성
       const insertUserInfoParams = [email, 1, sub, rememberMeToken];
 
       const connection = await pool.getConnection(async (conn) => conn);
-
-      const userIdResult = await userDao.insertUserInfo(
-        connection,
-        insertUserInfoParams
-      );
-      console.log(`추가된 회원 : ${userIdResult[0].insertId}`);
-      connection.release();
+      try {
+        await connection.beginTransaction();
+        await userDao.insertUserInfo(connection, insertUserInfoParams);
+        await connection.commit();
+      } catch (err) {
+        logger.error(`App - createUser Service error\n: ${err.message}`);
+        return errResponse(baseResponse.DB_ERROR);
+      } finally {
+        connection.release();
+      }
     }
 
-    //TODO: jwt 생성
+    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams); // 다시 user 조회 (bad smell)
+    const userIdx = userRow[0].idx;
+    // jwt 생성
+    const token = createJwt({
+      userIdx,
+    });
+    const { rememberMeToken } = userRow[0];
 
     return response(baseResponse.SUCCESS, {
       userIdx,
-      jwt,
+      jwt: token,
       rememberMeToken,
     });
   } catch (err) {
     logger.error(`App - oauthAppleLogin Service error\n: ${err.message}`);
     return errResponse(baseResponse.SOCIAL_LOGIN_SERVER_ERROR);
-  }
-};
-
-exports.createUser = async function (email, password, nickname) {
-  try {
-    // 이메일 중복 확인
-    const emailRows = await userProvider.emailCheck(email);
-    if (emailRows.length > 0)
-      return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
-
-    // 비밀번호 암호화
-    const hashedPassword = await crypto
-      .createHash("sha512")
-      .update(password)
-      .digest("hex");
-
-    const insertUserInfoParams = [email, hashedPassword, nickname];
-
-    const connection = await pool.getConnection(async (conn) => conn);
-
-    const userIdResult = await userDao.insertUserInfo(
-      connection,
-      insertUserInfoParams
-    );
-    console.log(`추가된 회원 : ${userIdResult[0].insertId}`);
-    connection.release();
-    return response(baseResponse.SUCCESS);
-  } catch (err) {
-    logger.error(`App - createUser Service error\n: ${err.message}`);
-    return errResponse(baseResponse.DB_ERROR);
-  }
-};
-
-// TODO: After 로그인 인증 방법 (JWT)
-exports.postSignIn = async function (email, password) {
-  try {
-    // 이메일 여부 확인
-    const emailRows = await userProvider.emailCheck(email);
-    if (emailRows.length < 1)
-      return errResponse(baseResponse.SIGNIN_EMAIL_WRONG);
-
-    const selectEmail = emailRows[0].email;
-
-    // 비밀번호 확인
-    const hashedPassword = await crypto
-      .createHash("sha512")
-      .update(password)
-      .digest("hex");
-
-    const selectUserPasswordParams = [selectEmail, hashedPassword];
-    const passwordRows = await userProvider.passwordCheck(
-      selectUserPasswordParams
-    );
-
-    if (passwordRows[0].password !== hashedPassword) {
-      return errResponse(baseResponse.SIGNIN_PASSWORD_WRONG);
-    }
-
-    // 계정 상태 확인
-    const userInfoRows = await userProvider.accountCheck(email);
-
-    if (userInfoRows[0].status === "INACTIVE") {
-      return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
-    } else if (userInfoRows[0].status === "DELETED") {
-      return errResponse(baseResponse.SIGNIN_WITHDRAWAL_ACCOUNT);
-    }
-
-    console.log(userInfoRows[0].id); // DB의 userId
-
-    //토큰 생성 Service
-    let token = await jwt.sign(
-      {
-        userId: userInfoRows[0].id,
-      }, // 토큰의 내용(payload)
-      process.env.JWTSECRET, // 비밀키
-      {
-        expiresIn: "365d",
-        subject: "userInfo",
-      } // 유효 기간 365일
-    );
-
-    return response(baseResponse.SUCCESS, {
-      userId: userInfoRows[0].id,
-      jwt: token,
-    });
-  } catch (err) {
-    logger.error(
-      `App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(
-        err
-      )}`
-    );
-    return errResponse(baseResponse.DB_ERROR);
-  }
-};
-
-exports.editUser = async function (id, nickname) {
-  try {
-    console.log(id);
-    const connection = await pool.getConnection(async (conn) => conn);
-    const editUserResult = await userDao.updateUserInfo(
-      connection,
-      id,
-      nickname
-    );
-    connection.release();
-
-    return response(baseResponse.SUCCESS);
-  } catch (err) {
-    logger.error(`App - editUser Service error\n: ${err.message}`);
-    return errResponse(baseResponse.DB_ERROR);
   }
 };
