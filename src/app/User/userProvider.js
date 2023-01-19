@@ -10,5 +10,5 @@ exports.oauthIdCheck = async function (selectUserOauthIdParams) {
   );
   connection.release();
 
-  return userResult;
+  return userResult[0];
 };
