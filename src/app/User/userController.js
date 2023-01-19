@@ -43,8 +43,9 @@ exports.oauthKakaoLogin = async function (req, res) {
     return res.send(errResponse(baseResponse.SOCIAL_AUTHORIZATION_CODE_EMPTY));
   }
 
-  const oauthKakaoLoginResponse =
-    userService.oauthKakaoLogin(authorizationCode);
+  const oauthKakaoLoginResponse = await userService.oauthKakaoLogin(
+    authorizationCode
+  );
 
   return res.send(oauthKakaoLoginResponse);
 };
