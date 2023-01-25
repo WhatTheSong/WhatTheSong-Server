@@ -4,7 +4,7 @@ require("dotenv").config();
 const createJwt = (payload) => {
   return jwt.sign(payload, process.env.JWTSECRET, {
     subject: "userJWT",
-    expiresIn: "24h",
+    expiresIn: "1h",
   });
 };
 
