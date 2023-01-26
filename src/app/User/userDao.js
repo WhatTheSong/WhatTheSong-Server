@@ -15,8 +15,8 @@ async function selectUserOauthId(connection, selectUserOauthIdParams) {
 // 유저 생성
 async function insertUserInfo(connection, insertUserInfoParams) {
   const insertUserInfoQuery = `
-        INSERT INTO User(email, oauthProvider, oauthId, rememberMeToken)
-        VALUES (?, ?, ?, ?);
+        INSERT INTO User(name, email, oauthProvider, oauthId, rememberMeToken)
+        VALUES (?, ?, ?, ?, ?);
     `;
   await connection.query(insertUserInfoQuery, insertUserInfoParams);
 
