@@ -1,6 +1,7 @@
 const express = require('express');
 const compression = require('compression');
 const methodOverride = require('method-override');
+const admin = require("firebase-admin");
 var cors = require('cors');
 module.exports = function () {
     const app = express();
@@ -19,7 +20,7 @@ module.exports = function () {
     /* App (Android, iOS) */
     // TODO: 도메인을 추가할 경우 이곳에 Route를 추가하세요.
     require('../src/app/User/userRoute')(app);
-    // require('../src/app/Board/boardRoute')(app);
+    require('../src/app/Notification/notificationRoute')(app);
 
     return app;
 };
