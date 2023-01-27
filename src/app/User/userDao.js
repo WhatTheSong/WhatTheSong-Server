@@ -25,5 +25,5 @@ async function insertUserInfo(connection, insertUserInfoParams) {
 
 module.exports = {
   selectUserOauthId,
-  selectUser,
+  insertUserInfo,
 };

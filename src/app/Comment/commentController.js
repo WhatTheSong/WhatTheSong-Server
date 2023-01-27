@@ -4,9 +4,9 @@ const CommentServide = require("./CommentService");
 // 댓글 목록 조회
 readAllComments = async function (req,res) {
     // const commentProvider = new CommentProvider(req.query);
-    const {postIdx} = req.query;
+    const postIdx = parseInt(req.params.postIdx);
     const response = await commentProvider.getComments(postIdx);
-    console.log(req.query)
+    console.log(req.params)
     return res.send(response);
 }
 
