@@ -1,9 +1,12 @@
 const { logger } = require("../../../../config/winston");
+const { response } = require("../../../../config/response");
+const { errResponse } = require("../../../../config/response");
 const baseResponse = require("../../../../config/baseResponseStatus");
 const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
 const userProvider = require("../userProvider");
 const userService = require("../userService");
+const { createJwt } = require("../../../../config/token");
 require("dotenv").config();
 
 module.exports = () => {
@@ -16,13 +19,28 @@ module.exports = () => {
       },
       async (accessToken, refreshToken, profile, done) => {
         // oauthId로 유저 조회
-        const selectUserOauthIdParams = ["kakao", profile.id];
+        const selectUserOauthIdParams = [profile.provider, profile.id];
         let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
         try {
           if (userRow) {
-            done(null, userRow);
           } else {
+            userRow = await userService.createUser(
+              refreshToken,
+              profile,
+              selectUserOauthIdParams
+            );
           }
+
+          const userIdx = userRow.idx;
+          // jwt 생성
+          const accessJwt = createJwt({
+            userIdx,
+          }).access();
+          const refreshJwt = createJwt({
+            userIdx,
+          }).refresh();
+
+          done(null, userRow);
         } catch (err) {
           logger.error(`App - oauthKakaoLogin Service error\n: ${err.message}`);
           return errResponse(baseResponse.SOCIAL_LOGIN_SERVER_ERROR);

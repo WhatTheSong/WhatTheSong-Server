@@ -12,18 +12,25 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { createJwt } = require("../../../config/token");
 
-exports.createUser = async function (refreshToken, profile) {
-  const insertUserInfoParams = [email, 2, sub, rememberMeToken];
+exports.createUser = async function (
+  refreshToken,
+  profile,
+  selectUserOauthIdParams
+) {
+  const { provider, id, displayName } = profile;
+  const email = profile._json?.kakao_account?.email;
+  const insertUserInfoParams = [provider, id, email, displayName, refreshToken];
 
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     await connection.beginTransaction();
     await userDao.insertUserInfo(connection, insertUserInfoParams);
     await connection.commit();
-    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams); // 다시 user 조회
+    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+    return userRow;
   } catch (err) {
     logger.error(`App - createUser Service error\n: ${err.message}`);
-    return errResponse(baseResponse.DB_ERROR);
+    throw new Error(baseResponse.DB_ERROR);
   } finally {
     connection.release();
   }
