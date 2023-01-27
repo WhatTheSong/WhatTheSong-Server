@@ -12,6 +12,19 @@ require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { createJwt } = require("../../../config/token");
 
-exports.oauthAppleLogin = async function (authorizationCode) {};
+exports.createUser = async function (refreshToken, profile) {
+  const insertUserInfoParams = [email, 2, sub, rememberMeToken];
 
-exports.oauthKakaoLogin = async function (authorizationCode) {};
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    await userDao.insertUserInfo(connection, insertUserInfoParams);
+    await connection.commit();
+    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams); // 다시 user 조회
+  } catch (err) {
+    logger.error(`App - createUser Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
