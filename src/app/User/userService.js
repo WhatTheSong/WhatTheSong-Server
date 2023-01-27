@@ -10,11 +10,7 @@ require("dotenv").config();
 
 /* 소셜 로그인 공통 */
 const jwt = require("jsonwebtoken");
-const passport = require("passport");
 const { createJwt } = require("../../../config/token");
-
-/* 카카오 소셜 로그인 */
-const KakaoStrategy = require("passport-kakao").Strategy;
 
 exports.oauthAppleLogin = async function (authorizationCode) {};
 
