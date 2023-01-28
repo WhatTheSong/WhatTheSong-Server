@@ -1,5 +1,6 @@
 module.exports = {
     "extends": "eslint:recommended",
+
     "rules": {
         "indent": [
             "error",
@@ -14,6 +15,7 @@ module.exports = {
         "no-unused-vars": 1,
         "no-multiple-empty-lines": 0,
         "space-before-function-paren": 0,
-        "eol-last": 0
+        "eol-last": 0,
+
     }
 };
