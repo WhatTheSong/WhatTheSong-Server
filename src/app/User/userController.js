@@ -5,7 +5,7 @@ const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
 
 /**
- * API Name : 애플 소셜 로그인 API
+ * API Name : 애플 소셜 로그인 API (JWT 발급)
  * [POST] /app/users/oauth/apple
  *
  * Body: authorizationCode
@@ -26,7 +26,7 @@ exports.oauthAppleLogin = async function (req, res) {
 };
 
 /**
- * API Name : 카카오 소셜 로그인 API
+ * API Name : 카카오 소셜 로그인 API (JWT 발급)
  * [POST] /app/users/oauth/kakao
  *
  * Query String: code
@@ -34,12 +34,20 @@ exports.oauthAppleLogin = async function (req, res) {
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
 exports.oauthKakaoLogin = async function (req, res) {
-  console.log("fff");
-  return response(baseResponse.SUCCESS, {
-    userIdx: req.userIdx,
-    accessToken: req.accessToken,
-    refreshToken: req.refreshToken,
-  });
+  const { err, user, info } = req;
+  if (err) {
+    return res.send(errResponse(baseResponse.SOCIAL_LOGIN_REJECT));
+  }
+  if (!user) {
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+  }
+  return res.send(
+    response(baseResponse.SUCCESS, {
+      userIdx: err,
+      accessToken: info.accessJwt,
+      refreshToken: info.refreshJwt,
+    })
+  );
 };
 
 /** JWT 토큰 검증 API
