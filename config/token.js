@@ -4,13 +4,13 @@ require("dotenv").config();
 const createJwt = (payload) => {
   return {
     access() {
-      return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET, {
+      return jwt.sign(payload, process.env.JWTSECRET, {
         subject: "ACCESS_TOKEN",
         expiresIn: "30m",
       });
     },
     refresh() {
-      return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
+      return jwt.sign(payload, process.env.JWTSECRET, {
         subject: "REFRESH_TOKEN",
         expiresIn: "30 days",
       });

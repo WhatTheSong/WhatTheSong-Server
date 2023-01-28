@@ -43,7 +43,7 @@ exports.oauthKakaoLogin = async function (req, res) {
   }
   return res.send(
     response(baseResponse.SUCCESS, {
-      userIdx: err,
+      userIdx: user.idx,
       accessToken: info.accessJwt,
       refreshToken: info.refreshJwt,
     })
@@ -54,7 +54,5 @@ exports.oauthKakaoLogin = async function (req, res) {
  * [GET] /app/auto-login
  */
 exports.check = async function (req, res) {
-  const userIdResult = req.verifiedToken.userId;
-  console.log(userIdResult);
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
