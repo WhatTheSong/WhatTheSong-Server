@@ -34,6 +34,7 @@ exports.oauthAppleLogin = async function (req, res) {
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
 exports.oauthKakaoLogin = async function (req, res) {
+  console.log("fff");
   return response(baseResponse.SUCCESS, {
     userIdx: req.userIdx,
     accessToken: req.accessToken,
