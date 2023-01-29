@@ -6,7 +6,7 @@ const passport = require("passport");
 const KakaoStrategy = require("passport-kakao").Strategy;
 const userProvider = require("../userProvider");
 const userService = require("../userService");
-const { createJwt } = require("../../../../config/token");
+const token = require("../../../../config/token");
 require("dotenv").config();
 
 module.exports = () => {
@@ -22,10 +22,12 @@ module.exports = () => {
         const selectUserOauthIdParams = [profile.provider, profile.id];
         let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
         try {
+          const refreshJwt = token.refresh();
           if (userRow) {
+            await userService.updateUserRefreshToken(profile.id, refreshJwt);
           } else {
             userRow = await userService.createUser(
-              refreshToken,
+              refreshJwt,
               profile,
               selectUserOauthIdParams
             );
@@ -33,12 +35,7 @@ module.exports = () => {
 
           const userIdx = userRow.idx;
           // jwt 생성
-          const accessJwt = createJwt({
-            userIdx,
-          }).access();
-          const refreshJwt = createJwt({
-            userIdx,
-          }).refresh();
+          const accessJwt = token.access(userIdx);
 
           done(null, userRow, { accessJwt, refreshJwt });
         } catch (err) {

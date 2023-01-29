@@ -56,3 +56,11 @@ exports.oauthKakaoLogin = async function (req, res) {
 exports.check = async function (req, res) {
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
 };
+
+exports.reissuanceToken = async function (req, res) {
+  const accessToken = req.headers["x-access-token"];
+  const refreshToken = req.headers["x-refresh-token"];
+  if (!accessToken || !refreshToken) {
+    return res.send(errResponse(baseResponse.TOKEN_EMPTY));
+  }
+};

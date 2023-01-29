@@ -1,5 +1,3 @@
-const { USER_USERID_NOT_EXIST } = require("../../../config/baseResponseStatus");
-
 module.exports = function (app) {
   const user = require("./userController");
   const jwtMiddleware = require("../../../config/jwtMiddleware");
@@ -21,6 +19,10 @@ module.exports = function (app) {
     user.oauthKakaoLogin
   );
 
-  // 자동 로그인 API
-  app.get("/app/auto-login", jwtMiddleware, user.check);
+  // get: 자동 로그인 API
+  // post: accessToken 재발급
+  app
+    .route("/app/token")
+    .get(jwtMiddleware, user.check)
+    .post(user.reissuanceToken);
 };

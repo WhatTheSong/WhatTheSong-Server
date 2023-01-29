@@ -8,10 +8,6 @@ const { response } = require("../../../config/response");
 const { errResponse } = require("../../../config/response");
 require("dotenv").config();
 
-/* 소셜 로그인 공통 */
-const jwt = require("jsonwebtoken");
-const { createJwt } = require("../../../config/token");
-
 exports.createUser = async function (
   refreshToken,
   profile,
@@ -30,6 +26,27 @@ exports.createUser = async function (
     return userRow;
   } catch (err) {
     logger.error(`App - createUser Service error\n: ${err.message}`);
+    throw new Error(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+exports.updateUserRefreshToken = async function (oauthId, refreshToken) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateUserRefreshTokenParams = [refreshToken, oauthId];
+  try {
+    await connection.beginTransaction();
+    await userDao.updateUserRefreshToken(
+      connection,
+      updateUserRefreshTokenParams
+    );
+    await connection.commit();
+    return;
+  } catch (err) {
+    logger.error(
+      `App - updateUserRefreshToken Service error\n: ${err.message}`
+    );
     throw new Error(baseResponse.DB_ERROR);
   } finally {
     connection.release();
