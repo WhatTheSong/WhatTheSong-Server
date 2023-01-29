@@ -1,14 +1,14 @@
 const jwt = require("jsonwebtoken");
-const userProvider = require("../src/app/User/userProvider");
 const baseResponse = require("../config/baseResponseStatus");
+const { errResponse } = require("./response");
 require("dotenv").config();
 
 module.exports = {
   // accessToken 발급
   access: (payload) => {
-    return jwt.sign({ payload }, process.env.JWTSECRET, {
+    return jwt.sign(payload, process.env.JWTSECRET, {
       subject: "ACCESS_TOKEN",
-      expiresIn: "30m",
+      expiresIn: "1s",
     });
   },
   // accessToken 검증
@@ -18,7 +18,10 @@ module.exports = {
       verifiedToken = jwt.verify(token, process.env.JWTSECRET);
       return verifiedToken;
     } catch (err) {
-      throw new Error(baseResponse.TOKEN_VERIFICATION_FAILURE);
+      if (err.message == "jwt malformed") {
+        throw errResponse(baseResponse.TOKEN_VERIFICATION_FAILURE);
+      }
+      return err.message;
     }
   },
   // refreshToken 발급

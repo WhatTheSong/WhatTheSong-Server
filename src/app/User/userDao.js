@@ -1,17 +1,3 @@
-// userIdx로 유저 조회
-async function selectUserIdx(connection, selectUserIdxParams) {
-  const selectUserIdxQuery = `
-                 SELECT idx
-                 FROM User
-                 WHERE idx = ?;
-                 `;
-  const [userRow] = await connection.query(
-    selectOauthIdQuery,
-    selectUserOauthIdParams
-  );
-  return userRow;
-}
-
 // oauthId로 유저 조회
 async function selectUserOauthId(connection, selectUserOauthIdParams) {
   const selectUserOauthIdQuery = `
@@ -37,8 +23,8 @@ async function insertUserInfo(connection, insertUserInfoParams) {
   return;
 }
 
-// 유저 refreshToken 재발급
-async function updateUserRefreshToken(
+// 유저 refreshToken 재발급 (oauthId)
+async function updateUserRefreshToken_oauthId(
   connection,
   updateUserRefreshTokenParams
 ) {
@@ -55,9 +41,42 @@ async function updateUserRefreshToken(
   return;
 }
 
+// 유저 refreshToken 재발급 (userIdx)
+async function updateUserRefreshToken_userIdx(
+  connection,
+  updateUserRefreshTokenParams
+) {
+  const updateUserRefreshTokenQuery = `
+        UPDATE User
+        SET refreshToken = ?
+        WHERE idx = ?
+    `;
+  await connection.query(
+    updateUserRefreshTokenQuery,
+    updateUserRefreshTokenParams
+  );
+
+  return;
+}
+
+// 유저 refreshToken 조회
+async function selectUserRefreshToken(connection, userIdx) {
+  const selectUserRefreshTokenQuery = `
+                 SELECT refreshToken
+                 FROM User
+                 WHERE idx = ?;
+                 `;
+  const [userRow] = await connection.query(
+    selectUserRefreshTokenQuery,
+    userIdx
+  );
+  return userRow;
+}
+
 module.exports = {
-  selectUserIdx,
   selectUserOauthId,
   insertUserInfo,
-  updateUserRefreshToken,
+  updateUserRefreshToken_oauthId,
+  updateUserRefreshToken_userIdx,
+  selectUserRefreshToken,
 };

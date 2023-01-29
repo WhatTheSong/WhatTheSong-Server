@@ -17,7 +17,7 @@ module.exports = {
     isSuccess: true,
     code: 1001,
     message: "JWT 토큰 검증 성공",
-  }, // ?
+  },
 
   //Request error
   USER_USERID_NOT_EXIST: {
@@ -67,6 +67,21 @@ module.exports = {
     isSuccess: false,
     code: 3006,
     message: "탈퇴 된 계정입니다. 고객센터에 문의해주세요.",
+  },
+  TOKEN_REFRESH_NOT_MATCHED: {
+    isSuccess: false,
+    code: 3048,
+    message: "DB의 유저 Refresh Token과 동일하지 않습니다.",
+  },
+  TOKEN_REFRESH_EXPIRED: {
+    isSuccess: false,
+    code: 3048,
+    message: "Refresh Token이 만료되었습니다. 다시 로그인해주세요.",
+  },
+  TOKEN_IS_NOT_EXPIRED: {
+    isSuccess: false,
+    code: 3049,
+    message: "Access Token이 아직 만료되지 않았습니다.",
   },
 
   //Connection, Transaction 등의 서버 오류

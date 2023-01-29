@@ -63,4 +63,9 @@ exports.reissuanceToken = async function (req, res) {
   if (!accessToken || !refreshToken) {
     return res.send(errResponse(baseResponse.TOKEN_EMPTY));
   }
+  const accessTokenResponse = await userService.reissuanceToken(
+    accessToken,
+    refreshToken
+  );
+  return res.send(accessTokenResponse);
 };

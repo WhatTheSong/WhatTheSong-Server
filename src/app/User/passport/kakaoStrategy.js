@@ -24,7 +24,10 @@ module.exports = () => {
         try {
           const refreshJwt = token.refresh();
           if (userRow) {
-            await userService.updateUserRefreshToken(profile.id, refreshJwt);
+            await userService.updateUserRefreshToken_oauthId(
+              profile.id,
+              refreshJwt
+            );
           } else {
             userRow = await userService.createUser(
               refreshJwt,
@@ -35,7 +38,7 @@ module.exports = () => {
 
           const userIdx = userRow.idx;
           // jwt 생성
-          const accessJwt = token.access(userIdx);
+          const accessJwt = token.access({ userIdx });
 
           done(null, userRow, { accessJwt, refreshJwt });
         } catch (err) {
