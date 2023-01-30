@@ -1,22 +1,23 @@
-const express = require('express');
-const compression = require('compression');
-const methodOverride = require('method-override');
-const admin = require("firebase-admin");
-var cors = require('cors');
+const express = require("express");
+const compression = require("compression");
+const methodOverride = require("method-override");
+const cors = require("cors");
+const passport = require("passport");
+const passportConfig = require("../src/app/User/passport");
+
 module.exports = function () {
-    const app = express();
+  const app = express();
 
-    app.use(compression());
+  passportConfig();
 
-    app.use(express.json());
+  app.use(compression());
 
-    app.use(express.urlencoded({extended: true}));
+  app.use(express.json());
 
-    app.use(methodOverride());
+  app.use(express.urlencoded({ extended: true }));
 
-    app.use(cors());
-    // app.use(express.static(process.cwd() + '/public'));
-
+  app.use(methodOverride());
+  
     /* App (Android, iOS) */
     // TODO: 도메인을 추가할 경우 이곳에 Route를 추가하세요.
     require('../src/app/User/userRoute')(app);
