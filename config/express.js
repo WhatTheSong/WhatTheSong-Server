@@ -4,6 +4,7 @@ const methodOverride = require("method-override");
 const cors = require("cors");
 const passport = require("passport");
 const passportConfig = require("../src/app/User/passport");
+
 module.exports = function () {
   const app = express();
 
@@ -16,11 +17,11 @@ module.exports = function () {
   app.use(express.urlencoded({ extended: true }));
 
   app.use(methodOverride());
+  
+    /* App (Android, iOS) */
+    // TODO: 도메인을 추가할 경우 이곳에 Route를 추가하세요.
+    require('../src/app/User/userRoute')(app);
+    require('../src/app/Notification/notificationRoute')(app);
 
-  app.use(cors());
-
-  // TODO: 도메인을 추가할 경우 이곳에 Route를 추가하세요.
-  require("../src/app/User/userRoute")(app);
-
-  return app;
+    return app;
 };
