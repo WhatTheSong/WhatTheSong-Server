@@ -12,3 +12,10 @@ exports.oauthIdCheck = async function (selectUserOauthIdParams) {
 
   return userResult;
 };
+
+exports.getNickname = async function(userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const nicknameResult = await userDao.selectNickname(connection, userIdx);
+  connection.release();
+  return nicknameResult;
+}

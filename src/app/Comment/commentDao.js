@@ -1,13 +1,13 @@
 // 댓글 목록 조회
 async function selectComment(connection, postIdx) {
     const selectCommentListQuery = `
-        SELECT comment, userIdx, updatedAt
+        SELECT comment, userIdx, updatedAt, nickname
         FROM Comment
-        WHERE postIdx = ?;
-        `;
+        WHERE postIdx = ?;`;
     const [commentRows] = await connection.query(selectCommentListQuery, postIdx);
     return commentRows;
 }
+
 
 // 댓글 등록
 // async function insertComment(connection) {
