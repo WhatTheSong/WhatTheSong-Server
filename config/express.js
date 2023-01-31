@@ -3,6 +3,7 @@ const compression = require('compression');
 const methodOverride = require('method-override');
 const admin = require("firebase-admin");
 var cors = require('cors');
+const fileUpload = require('express-fileupload');
 module.exports = function () {
     const app = express();
 
@@ -16,6 +17,11 @@ module.exports = function () {
 
     app.use(cors());
     // app.use(express.static(process.cwd() + '/public'));
+
+    // 음성파일 전달 받기 위한 업로드 의존성
+    app.use(fileUpload({
+        createParentPath: true
+    }));
 
     /* App (Android, iOS) */
     // TODO: 도메인을 추가할 경우 이곳에 Route를 추가하세요.
