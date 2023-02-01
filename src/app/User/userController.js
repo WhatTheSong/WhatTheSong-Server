@@ -36,6 +36,7 @@ exports.oauthAppleLogin = async function (req, res) {
 exports.oauthKakaoLogin = async function (req, res) {
   const { err, user, info } = req;
   if (err) {
+    console.log(err);
     return res.send(errResponse(baseResponse.SOCIAL_LOGIN_REJECT));
   }
   if (!user) {
