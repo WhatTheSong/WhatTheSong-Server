@@ -34,13 +34,24 @@ exports.oauthAppleLogin = async function (req, res) {
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
 exports.oauthKakaoLogin = async function (req, res) {
-  const { err, user, info } = req;
-  if (err) {
-    return res.send(errResponse(baseResponse.SOCIAL_LOGIN_REJECT));
+  const { oauthId, nickname, email } = req.body;
+  const profile = {
+    provider: "kakao",
+    id: oauthId,
+    email,
+    displayName: nickname,
+  };
+
+  // oauthId로 유저 조회
+  const selectUserOauthIdParams = [profile.provider, profile.id];
+  let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+
+  if (userRow) {
+    await userService.updateUserRefreshToken_oauthId(profile.id);
+  } else {
+    userRow = await userService.createUser(profile, selectUserOauthIdParams);
   }
-  if (!user) {
-    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
-  }
+
   return res.send(
     response(baseResponse.SUCCESS, {
       userIdx: user.idx,

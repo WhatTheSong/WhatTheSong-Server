@@ -6,18 +6,7 @@ module.exports = function (app) {
   app.post("/app/users/oauth/apple", user.oauthAppleLogin);
 
   // 카카오 소셜 로그인 API (JWT 발급)
-  app.get(
-    "/app/users/oauth/kakao",
-    function (req, res, next) {
-      passport.authenticate("kakao", function (err, user, info) {
-        req.err = err;
-        req.user = user;
-        req.info = info;
-        next();
-      })(req, res, next);
-    },
-    user.oauthKakaoLogin
-  );
+  app.post("/app/users/oauth/kakao", user.oauthKakaoLogin);
 
   // get: 자동 로그인 API
   // post: accessToken 재발급

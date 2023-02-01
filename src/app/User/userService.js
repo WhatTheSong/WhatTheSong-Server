@@ -10,18 +10,19 @@ const { errResponse } = require("../../../config/response");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-exports.createUser = async function (
-  refreshToken,
-  profile,
-  selectUserOauthIdParams
-) {
-  const { provider, id, displayName } = profile;
-  const email = profile._json?.kakao_account?.email;
-  const insertUserInfoParams = [provider, id, email, displayName, refreshToken];
-
+exports.createUser = async function (profile, selectUserOauthIdParams) {
+  const { provider, id, email, displayName } = profile;
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     await connection.beginTransaction();
+    const refreshToken = token.refresh();
+    const insertUserInfoParams = [
+      provider,
+      id,
+      email,
+      displayName,
+      refreshToken,
+    ];
     await userDao.insertUserInfo(connection, insertUserInfoParams);
     await connection.commit();
     userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
@@ -35,14 +36,12 @@ exports.createUser = async function (
   }
 };
 
-exports.updateUserRefreshToken_oauthId = async function (
-  oauthId,
-  refreshToken
-) {
+exports.updateUserRefreshToken_oauthId = async function (oauthId) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const updateUserRefreshTokenParams = [refreshToken, oauthId];
   try {
     await connection.beginTransaction();
+    const refreshToken = token.refresh();
+    const updateUserRefreshTokenParams = [refreshToken, oauthId];
     await userDao.updateUserRefreshToken_oauthId(
       connection,
       updateUserRefreshTokenParams
