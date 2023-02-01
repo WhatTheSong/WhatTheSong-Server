@@ -43,6 +43,7 @@ module.exports = () => {
           done(null, userRow, { accessJwt, refreshJwt });
         } catch (err) {
           logger.error(`App - oauthKakaoLogin Service error\n: ${err.message}`);
+          console.log(err);
           return errResponse(baseResponse.SOCIAL_LOGIN_SERVER_ERROR);
         }
       }
