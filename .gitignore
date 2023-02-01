@@ -10,6 +10,7 @@ log/*
 
 # IntelliJ project files
 .idea
+.idea/*
 .idea/*.xml
 *.iml
 out
