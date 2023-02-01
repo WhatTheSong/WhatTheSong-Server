@@ -41,6 +41,7 @@ exports.oauthKakaoLogin = async function (req, res) {
   if (!user) {
     return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
   }
+  console.log(user.idx, info.accessJwt, info.refreshJwt);
   return res.send(
     response(baseResponse.SUCCESS, {
       userIdx: user.idx,

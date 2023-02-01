@@ -6,6 +6,7 @@ const baseResponse = require("./baseResponseStatus");
 require("dotenv").config();
 
 const jwtMiddleware = (req, res, next) => {
+  console.log("ffff");
   // read the token from header or url
   const token = req.headers["x-access-token"] || req.query.token;
   // token does not exist
