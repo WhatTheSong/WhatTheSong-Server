@@ -64,6 +64,28 @@ module.exports = {
     message: "탈퇴 된 계정입니다. 고객센터에 문의해주세요.",
   },
 
+
+  COMMENT_EMPTY: {
+    isSuccess: false,
+    code: 3101,
+    message: "조회할 댓글 목록이 존재하지 않습니다.",
+  },
+  COMMENT_COMMENTIDX_NOT_EXIST: {
+    isSuccess: false,
+    code: 3102,
+    message: "해당 댓글이 존재하지 않습니다.",
+  },
+  REPLY_EMPTY: {
+    isSuccess: false,
+    code: 3103,
+    message: "조회할 답글 목록이 존재하지 않습니다.",
+  },
+  COMMENT_REPLYIDX_NOT_EXIST: {
+    isSuccess: false,
+    code: 3104,
+    message: "해당 답글이 존재하지 않습니다.",
+  },
+
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: "데이터 베이스 에러" },
   SERVER_ERROR: { isSuccess: false, code: 4001, message: "서버 에러" },
