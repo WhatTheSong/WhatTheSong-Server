@@ -1,7 +1,7 @@
 module.exports = function (app) {
   const user = require("./userController");
   const jwtMiddleware = require("../../../config/jwtMiddleware");
-  const passport = require("passport");
+
   // 애플 소셜 로그인 API (JWT 발급)
   app.post("/app/users/oauth/apple", user.oauthAppleLogin);
 
