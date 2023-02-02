@@ -71,7 +71,7 @@ const updateUserRefreshToken_userIdx = async function (userIdx, refreshToken) {
   const updateUserRefreshTokenParams = [refreshToken, userIdx];
   try {
     await connection.beginTransaction();
-    const test = await userDao.updateUserRefreshToken_userIdx(
+    await userDao.updateUserRefreshToken_userIdx(
       connection,
       updateUserRefreshTokenParams
     );
@@ -121,6 +121,7 @@ exports.reissuanceToken = async function (accessToken, refreshToken) {
     await updateUserRefreshToken_userIdx(userIdx, refreshJwt);
 
     return response(baseResponse.SUCCESS, {
+      userIdx: userIdx,
       accessToken: accessJwt,
       refreshToken: refreshJwt,
     });

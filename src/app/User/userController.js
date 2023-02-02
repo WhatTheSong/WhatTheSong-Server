@@ -47,6 +47,10 @@ exports.oauthKakaoLogin = async function (req, res) {
   const selectUserOauthIdParams = [profile.provider, profile.id];
   let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
 
+  if (!userRow) {
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
+  }
+
   const refreshToken = await userService.createRefreshToken();
 
   if (userRow) {
