@@ -26,7 +26,7 @@ exports.updateComment = async function(postIdx, commentIdx, commentContent) {
     const connection = await pool.getConnection(async (conn) => conn);
     const commentRow = await commentProvider.getOneComment(postIdx, commentIdx)
     console.log(commentRow, "확인")
-    if (!commentRow.length) {
+    if (!commentRow) {
         connection.release();
         return errResponse(baseResponse.COMMENT_COMMENTIDX_NOT_EXIST);
     } else {
