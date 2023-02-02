@@ -8,10 +8,10 @@ module.exports = function(router) {
     router.post('/app/posts/:postIdx/comments', jwtMiddleware, ctrl.createComment);
 
     // 3. 댓글 수정
-    router.put('/app/posts/:postIdx/comments/:idx');
+    router.patch('/app/posts/:postIdx/comments/:idx', ctrl.updateComment);
 
     // 4. 댓글 삭제
-    router.delete('/app/posts/:postIdx/comments/:idx');
+    router.delete('/app/posts/:postIdx/comments/:idx', ctrl.deleteComment);
 
     // 5. 답글 목록 조회
     router.get('/app/posts/:postIdx/commnents/:idx/replies');
@@ -20,7 +20,7 @@ module.exports = function(router) {
     router.post('/app/posts/:postIdx/commnents/:idx/replies');
 
     // 7. 답글 수정
-    router.put('/app/posts/:postIdx/commnents/:idx/replies/:replyIdx');
+    router.patch('/app/posts/:postIdx/commnents/:idx/replies/:replyIdx');
 
     // 8. 답글 삭제
     router.delete('/app/posts/:postIdx/commnents/:idx/replies/:replyIdx');

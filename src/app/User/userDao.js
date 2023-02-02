@@ -36,5 +36,5 @@ async function selectNickname(connection, userIdx) {
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
-  selectNickname,
+  selectNickname
 };

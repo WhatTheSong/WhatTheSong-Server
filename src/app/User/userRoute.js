@@ -3,8 +3,8 @@ module.exports = function (app) {
   const jwtMiddleware = require("../../../config/jwtMiddleware");
 
   // 애플 소셜 로그인 API
-  app.post("/app/users/oauth/apple", user.oauthAppleLogin);
+  //app.post("/app/users/oauth/apple", user.oauthAppleLogin);
 
   // 자동 로그인 API
-  app.get("/app/auto-login", jwtMiddleware, user.check);
+  //app.get("/app/auto-login", jwtMiddleware, user.check);
 };

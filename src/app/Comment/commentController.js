@@ -13,39 +13,37 @@ readAllComments = async function (req,res) {
 
 // 댓글 등록
 createComment = async function (req,res) {
-    const loggedInUserIdx = req.verifiedToken.userIdx;
     const postIdx = parseInt(req.params.postIdx);
-    const commentIdx = parseInt(req.params.commentIdx);
-    const commentContent = parseInt(req.params.content);
+    const commentIdx = parseInt(req.body.idx);
+    const commentContent = parseInt(req.body.content);
+    const loggedInUserIdx = req.verifiedToken.userIdx;
     const nickname = userProvider.getNickname(loggedInUserIdx);
-
-    const response = await commentService.insertComment(postIdx, commentIdx, commentContent, nickname);
-
-    console.log(req.verifiedToken.userId);
-    return res.send(loggedInUserIdx);
+    const createCommentResponse = await commentService.createComment(postIdx, commentIdx, commentContent, nickname);
+    // console.log(req.verifiedToken.userId);
+    return res.send(createCommentResponse);
 }
 
-// const comment = {
-//     // // 댓글 목록 조회
-//     // readAllComments: async (req,res) => {
-//     //     const commentProvider = new CommentProvider(req.query);
-//     //     const {postIdx} = req.query;
-//     //     const response = await commentProvider.getComments(postIdx);
-//     //     return response;
-//     // }
+// 댓글 수정
+updateComment = async function (req,res) {
+    const postIdx = parseInt(req.params.postIdx);
+    const commentIdx = parseInt(req.params.idx);
+    const commentContent = parseInt(req.body.content);
+    const updateCommentResponse = await commentService.updateComment(postIdx, commentIdx, commentContent);
+    return res.send(updateCommentResponse);
+}
 
-// //     // 댓글 등록
-// //     addComment: (req,res) => {
-// //         const commentService = new CommentService(req.body);
-        
-// //     }
-// // }
+// 댓글 삭제
+deleteComment = async function (req,res) {
+    const postIdx = parseInt(req.params.postIdx);
+    const commentIdx = parseInt(req.params.idx);
+    const deleteCommentResponse = await commentService.deleteComment(postIdx, commentIdx);
+    return res.send(deleteCommentResponse);
+}
 
-// const reply = {
-
-// }
 
 module.exports = {
     readAllComments,
     createComment,
+    updateComment,
+    deleteComment
 };
