@@ -101,7 +101,10 @@ exports.editProfile = async function (req, res) {
     return res.send(errResponse(baseResponse.USER_NICKNAME_IS_EMPTY));
   }
 
-  const editProfileResponse = await userService.editProfile();
+  const editProfileResponse = await userService.updateUserNickname(
+    nickname,
+    userIdx
+  );
 
   return res.send(editProfileResponse);
 };

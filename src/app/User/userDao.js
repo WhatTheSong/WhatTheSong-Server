@@ -73,10 +73,21 @@ async function selectUserRefreshToken(connection, userIdx) {
   return userRow;
 }
 
+async function updateUserNickname(connection, updateUserInfoParams) {
+  const updateUserNicknameQuery = `
+                 UPDATE User
+                 SET name = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNicknameQuery, updateUserInfoParams);
+  return;
+}
+
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
   updateUserRefreshToken_oauthId,
   updateUserRefreshToken_userIdx,
   selectUserRefreshToken,
+  updateUserNickname,
 };
