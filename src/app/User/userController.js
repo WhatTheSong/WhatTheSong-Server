@@ -92,3 +92,16 @@ exports.reissuanceToken = async function (req, res) {
   );
   return res.send(accessTokenResponse);
 };
+
+exports.editProfile = async function (req, res) {
+  const userIdx = req.verifiedToken.userIdx;
+  const { nickname } = req.body;
+
+  if (!nickname) {
+    return res.send(errResponse(baseResponse.USER_NICKNAME_IS_EMPTY));
+  }
+
+  const editProfileResponse = await userService.editProfile();
+
+  return res.send(editProfileResponse);
+};

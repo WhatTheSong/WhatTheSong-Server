@@ -25,10 +25,10 @@ module.exports = {
     code: 2001,
     message: "해당 회원이 존재하지 않습니다.",
   },
-  SOCIAL_AUTHORIZATION_CODE_EMPTY: {
+  USER_NICKNAME_IS_EMPTY: {
     isSuccess: false,
     code: 2002,
-    message: "authorizationCode를 입력해주세요.",
+    message: "닉네임을 입력해주세요.",
   },
   SOCIAL_LOGIN_REJECT: {
     isSuccess: false,
