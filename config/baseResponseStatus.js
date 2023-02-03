@@ -70,7 +70,7 @@ module.exports = {
   },
   TOKEN_REFRESH_NOT_MATCHED: {
     isSuccess: false,
-    code: 3048,
+    code: 3047,
     message: "DB의 유저 Refresh Token과 동일하지 않습니다.",
   },
   TOKEN_REFRESH_EXPIRED: {

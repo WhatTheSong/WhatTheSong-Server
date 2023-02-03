@@ -1,8 +1,8 @@
-const passport = require("passport");
 const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
+const { refreshToken } = require("firebase-admin/app");
 
 /**
  * API Name : 애플 소셜 로그인 API (JWT 발급)
@@ -34,20 +34,41 @@ exports.oauthAppleLogin = async function (req, res) {
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
 exports.oauthKakaoLogin = async function (req, res) {
-  const { err, user, info } = req;
-  if (err) {
-    console.log(err);
-    return res.send(errResponse(baseResponse.SOCIAL_LOGIN_REJECT));
-  }
-  if (!user) {
+  const { oauthId, nickname, email } = req.body;
+  const profile = {
+    provider: "kakao",
+    id: oauthId,
+    email,
+    displayName: nickname,
+  };
+
+  // oauthId로 유저 조회
+  const selectUserOauthIdParams = [profile.provider, profile.id];
+  let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+
+  if (!userRow) {
     return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
   }
-  console.log(user.idx, info.accessJwt, info.refreshJwt);
+
+  const refreshToken = await userService.createRefreshToken();
+
+  if (userRow) {
+    await userService.updateUserRefreshToken_oauthId(refreshToken, profile.id);
+  } else {
+    userRow = await userService.createUser(
+      refreshToken,
+      profile,
+      selectUserOauthIdParams
+    );
+  }
+
+  const accessToken = await userService.createAccessToken(userRow.idx);
+
   return res.send(
     response(baseResponse.SUCCESS, {
-      userIdx: user.idx,
-      accessToken: info.accessJwt,
-      refreshToken: info.refreshJwt,
+      userIdx: userRow.idx,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
     })
   );
 };

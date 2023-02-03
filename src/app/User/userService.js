@@ -15,13 +15,17 @@ exports.createUser = async function (
   profile,
   selectUserOauthIdParams
 ) {
-  const { provider, id, displayName } = profile;
-  const email = profile._json?.kakao_account?.email;
-  const insertUserInfoParams = [provider, id, email, displayName, refreshToken];
-
+  const { provider, id, email, displayName } = profile;
   const connection = await pool.getConnection(async (conn) => conn);
   try {
     await connection.beginTransaction();
+    const insertUserInfoParams = [
+      provider,
+      id,
+      email,
+      displayName,
+      refreshToken,
+    ];
     await userDao.insertUserInfo(connection, insertUserInfoParams);
     await connection.commit();
     userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
@@ -36,13 +40,15 @@ exports.createUser = async function (
 };
 
 exports.updateUserRefreshToken_oauthId = async function (
-  oauthId,
-  refreshToken
+  refreshToken,
+  oauthId
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const updateUserRefreshTokenParams = [refreshToken, oauthId];
   try {
     await connection.beginTransaction();
+
+    const updateUserRefreshTokenParams = [refreshToken, oauthId];
+
     await userDao.updateUserRefreshToken_oauthId(
       connection,
       updateUserRefreshTokenParams
@@ -65,7 +71,7 @@ const updateUserRefreshToken_userIdx = async function (userIdx, refreshToken) {
   const updateUserRefreshTokenParams = [refreshToken, userIdx];
   try {
     await connection.beginTransaction();
-    const test = await userDao.updateUserRefreshToken_userIdx(
+    await userDao.updateUserRefreshToken_userIdx(
       connection,
       updateUserRefreshTokenParams
     );
@@ -104,6 +110,7 @@ exports.reissuanceToken = async function (accessToken, refreshToken) {
     // header로 들어온 리프레쉬 토큰이 유저가 제일 최근에 받은 리프레쉬 토큰과 동일한지 확인 (보안 강화)
     const { userIdx } = decodeAccessToken;
     const userRow = await userProvider.getUserRefreshToken(userIdx);
+
     if (refreshToken !== userRow.refreshToken) {
       return errResponse(baseResponse.TOKEN_REFRESH_NOT_MATCHED);
     }
@@ -114,10 +121,29 @@ exports.reissuanceToken = async function (accessToken, refreshToken) {
     await updateUserRefreshToken_userIdx(userIdx, refreshJwt);
 
     return response(baseResponse.SUCCESS, {
+      userIdx: userIdx,
       accessToken: accessJwt,
       refreshToken: refreshJwt,
     });
   } catch (err) {
     return err;
+  }
+};
+
+// Access Token 재발급
+exports.createAccessToken = async function (userIdx) {
+  try {
+    return token.access({ userIdx });
+  } catch (err) {
+    return null;
+  }
+};
+
+// Refresh Token 재발급
+exports.createRefreshToken = async function () {
+  try {
+    return token.refresh();
+  } catch (err) {
+    return null;
   }
 };
