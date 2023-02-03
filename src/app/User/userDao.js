@@ -83,6 +83,16 @@ async function updateUserNickname(connection, updateUserInfoParams) {
   return;
 }
 
+async function updateUserNotification(connection, updateUserInfoParams) {
+  const updateUserNotificationQuery = `
+                 UPDATE User
+                 SET notificationAllow = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNotificationQuery, updateUserInfoParams);
+  return;
+}
+
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
@@ -90,4 +100,5 @@ module.exports = {
   updateUserRefreshToken_userIdx,
   selectUserRefreshToken,
   updateUserNickname,
+  updateUserNotification,
 };

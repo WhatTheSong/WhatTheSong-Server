@@ -94,7 +94,7 @@ exports.reissuanceToken = async function (req, res) {
 };
 
 exports.editProfile = async function (req, res) {
-  const userIdx = req.verifiedToken.userIdx;
+  const { userIdx } = req.verifiedToken;
   const { nickname } = req.body;
 
   if (!nickname) {
@@ -107,4 +107,23 @@ exports.editProfile = async function (req, res) {
   );
 
   return res.send(editProfileResponse);
+};
+
+exports.editNotificationAllow = async function (req, res) {
+  const { userIdx } = req.verifiedToken;
+  const { isAllow } = req.body;
+  if (!isAllow) {
+    return res.send(errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY));
+  }
+  if (isAllow != 1) {
+    if (isAllow != 2) {
+      return res.send(
+        errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY)
+      );
+    }
+  }
+  const editNotificationAllowResponse =
+    await userService.updateUserNotification(isAllow, userIdx);
+
+  return res.send(editNotificationAllowResponse);
 };

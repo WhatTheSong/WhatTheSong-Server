@@ -35,6 +35,11 @@ module.exports = {
     code: 2003,
     message: "소셜 로그인이 정상적으로 수행되지 않았습니다. 다시 시도해주세요.",
   },
+  USER_NOTIFICATION_VALUE_IS_EMPTY: {
+    isSuccess: false,
+    code: 2004,
+    message: "푸시 알람 동의 여부 값이 잘못되었습니다.",
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {

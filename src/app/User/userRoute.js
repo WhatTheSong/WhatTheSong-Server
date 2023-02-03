@@ -11,6 +11,13 @@ module.exports = function (app) {
   // 사용자 이름 변경 API
   app.patch("/app/users/edit-profile", jwtMiddleware, user.editProfile);
 
+  // 푸시 알람 동의 여부 변경 API
+  app.patch(
+    "/app/users/edit-notification",
+    jwtMiddleware,
+    user.editNotificationAllow
+  );
+
   // post: accessToken 재발급
   app
     .route("/app/token")

@@ -164,3 +164,20 @@ exports.updateUserNickname = async function (nickname, userIdx) {
     connection.release();
   }
 };
+
+exports.updateUserNotification = async function (isAllow, userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const updateUserInfoParams = [isAllow, userIdx];
+    await userDao.updateUserNotification(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateUserNickname Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
