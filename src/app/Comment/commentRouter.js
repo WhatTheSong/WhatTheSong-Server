@@ -15,15 +15,15 @@ module.exports = function(router) {
 
 
     // 5. 답글 목록 조회
-    router.get('/app/posts/:postIdx/commnents/:parentIdx/replies', ctrl.readAllReplies);
+    router.get('/app/posts/:postIdx/comments/:parentIdx/replies', ctrl.readAllReplies);
 
     // 6. 답글 등록
-    router.post('/app/posts/:postIdx/commnents/:parentIdx/replies', jwtMiddleware, ctrl.createReply);
+    router.post('/app/posts/:postIdx/comments/:parentIdx/replies', jwtMiddleware, ctrl.createReply);
 
     // 7. 답글 수정
-    router.patch('/app/posts/:postIdx/commnents/:parentIdx/replies/:idx', ctrl.updateReply);
+    router.patch('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', ctrl.updateReply);
 
     // 8. 답글 삭제
-    router.delete('/app/posts/:postIdx/commnents/:parentIdx/replies/:idx', ctrl.deleteReply);
+    router.delete('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', ctrl.deleteReply);
 
 }
