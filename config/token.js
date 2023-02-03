@@ -8,7 +8,7 @@ module.exports = {
   access: (payload) => {
     return jwt.sign(payload, process.env.JWTSECRET, {
       subject: "ACCESS_TOKEN",
-      expiresIn: "1s",
+      expiresIn: "30m",
     });
   },
   // accessToken 검증
