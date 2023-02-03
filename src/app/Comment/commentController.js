@@ -10,14 +10,23 @@ readAllComments = async function (req,res) {
     return res.send(response);
 }
 
+// 닉네임 조회 테스트
+// getNickname = async function (req,res) {
+//     const loggedInUserIdx = req.verifiedToken.userIdx;
+//     console.log(loggedInUserIdx);
+//     const nickname = await userProvider.getNickname(loggedInUserIdx);
+//     return res.send(nickname);
+// }
 
 // 댓글 등록
 createComment = async function (req,res) {
     const postIdx = parseInt(req.params.postIdx);
-    const commentContent = parseInt(req.body.content);
+    const commentContent = req.body.content;
+    console.log(commentContent)
     const loggedInUserIdx = req.verifiedToken.userIdx;
-    const nickname = userProvider.getNickname(loggedInUserIdx);
-    const createCommentResponse = await commentService.createComment(postIdx, commentContent, nickname);
+    const nickname = await userProvider.getNickname(loggedInUserIdx);
+    console.log(nickname)
+    const createCommentResponse = await commentService.createComment(postIdx, commentContent, nickname, loggedInUserIdx);
     // console.log(req.verifiedToken.userId);
     return res.send(createCommentResponse);
 }

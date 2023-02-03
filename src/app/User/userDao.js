@@ -29,8 +29,9 @@ async function selectNickname(connection, userIdx) {
     SELECT name
     FROM User
     WHERE idx = ?;`;
-  const [nickname] = await connection.query(selectNicknameQuery, userIdx);
-  return nickname;
+  const nickname = await connection.query(selectNicknameQuery, userIdx);
+  //console.log(nickname)
+  return nickname[0];
 }
 
 // 유저 refreshToken 재발급 (oauthId)

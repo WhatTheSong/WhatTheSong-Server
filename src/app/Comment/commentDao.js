@@ -19,11 +19,12 @@ async function selectOneComment(connection, postIdx, commentIdx) {
 }
 
 // 댓글 등록
-async function insertComment(connection, postIdx, commentContent, nickname) {
+async function insertComment(connection, postIdx, commentContent, nickname, loggedInUserIdx) {
+    //console.log(loggedInUserIdx)
     const insertCommentQuery = `
-        INSERT INTO Comment(postIdx, commentContent, nickname, status)
-        VALUES (?,?,?,'comment');`;
-    await connection.query(insertCommentQuery, [postIdx, commentContent, nickname]);
+        INSERT INTO Comment(postIdx, comment, nickname, status, userIdx)
+        VALUES (?,?,?,'comment',?);`;
+    await connection.query(insertCommentQuery, [postIdx, commentContent, nickname,loggedInUserIdx]);
     return;
 }
 

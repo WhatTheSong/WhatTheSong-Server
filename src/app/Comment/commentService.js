@@ -7,14 +7,15 @@ const { response } = require("../../../config/response");
 const baseResponse = require("../../../config/baseResponseStatus");
 
 // 댓글 등록
-exports.createComment = async function(postIdx, commentContent, nickname) {
+exports.createComment = async function(postIdx, commentContent, nickname, loggedInUserIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     try {
         await connection.beginTransaction();
-        await commentDao.insertComment(connection, postIdx, commentContent, nickname);
+        await commentDao.insertComment(connection, postIdx, commentContent, nickname, loggedInUserIdx);
         await connection.commit();
         return response(baseResponse.SUCCESS, {});
     } catch (err) {
+        console.log(err)
         return errResponse(baseResponse.DB_ERROR);
     } finally {
         connection.release();
