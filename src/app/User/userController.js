@@ -92,3 +92,38 @@ exports.reissuanceToken = async function (req, res) {
   );
   return res.send(accessTokenResponse);
 };
+
+exports.editProfile = async function (req, res) {
+  const { userIdx } = req.verifiedToken;
+  const { nickname } = req.body;
+
+  if (!nickname) {
+    return res.send(errResponse(baseResponse.USER_NICKNAME_IS_EMPTY));
+  }
+
+  const editProfileResponse = await userService.updateUserNickname(
+    nickname,
+    userIdx
+  );
+
+  return res.send(editProfileResponse);
+};
+
+exports.editNotificationAllow = async function (req, res) {
+  const { userIdx } = req.verifiedToken;
+  const { isAllow } = req.body;
+  if (!isAllow) {
+    return res.send(errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY));
+  }
+  if (isAllow != 1) {
+    if (isAllow != 2) {
+      return res.send(
+        errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY)
+      );
+    }
+  }
+  const editNotificationAllowResponse =
+    await userService.updateUserNotification(isAllow, userIdx);
+
+  return res.send(editNotificationAllowResponse);
+};
