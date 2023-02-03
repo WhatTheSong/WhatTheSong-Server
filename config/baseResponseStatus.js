@@ -17,7 +17,7 @@ module.exports = {
     isSuccess: true,
     code: 1001,
     message: "JWT 토큰 검증 성공",
-  }, // ?
+  },
 
   //Request error
   USER_USERID_NOT_EXIST: {
@@ -25,10 +25,15 @@ module.exports = {
     code: 2001,
     message: "해당 회원이 존재하지 않습니다.",
   },
-  APPLE_AUTHORIZATION_CODE_EMPTY: {
+  SOCIAL_AUTHORIZATION_CODE_EMPTY: {
     isSuccess: false,
     code: 2002,
     message: "authorizationCode를 입력해주세요.",
+  },
+  SOCIAL_LOGIN_REJECT: {
+    isSuccess: false,
+    code: 2003,
+    message: "소셜 로그인이 정상적으로 수행되지 않았습니다. 다시 시도해주세요.",
   },
 
   // Response error
@@ -62,6 +67,21 @@ module.exports = {
     isSuccess: false,
     code: 3006,
     message: "탈퇴 된 계정입니다. 고객센터에 문의해주세요.",
+  },
+  TOKEN_REFRESH_NOT_MATCHED: {
+    isSuccess: false,
+    code: 3047,
+    message: "DB의 유저 Refresh Token과 동일하지 않습니다.",
+  },
+  TOKEN_REFRESH_EXPIRED: {
+    isSuccess: false,
+    code: 3048,
+    message: "Refresh Token이 만료되었습니다. 다시 로그인해주세요.",
+  },
+  TOKEN_IS_NOT_EXPIRED: {
+    isSuccess: false,
+    code: 3049,
+    message: "Access Token이 아직 만료되지 않았습니다.",
   },
 
 
