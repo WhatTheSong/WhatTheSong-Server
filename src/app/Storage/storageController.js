@@ -11,13 +11,11 @@ const { response, errResponse } = require("../../../config/response");
  * body :
  */
 exports.postVoiceToS3 = async(req,res) =>{
-    const f = req.file.uploadFile;
-    if (!f) return res.status(404).send(baseResponse.UPLOAD_FILE_EMPTY);
-    console.log(f.size);
-    // if(f.size>)
-    // storageService.uploadFileToS3(req.file.uploadFile)
-    return res.status(200).send(`${f.name}이 업로드되었다이`);
+    const f = req.files.uploadFiles;
+    if (!f) return res.status(404).send({msg:"파일이 없다."});
 
+    const result = await storageService.uploadFileToS3(f);
+    console.log(result)
 
-
+    return res.status(200).send(`${result}`);
 }
