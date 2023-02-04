@@ -7,16 +7,18 @@ const fileUpload = require('express-fileupload');
 module.exports = function () {
     const app = express();
 
-    app.use(compression());
 
-    app.use(express.json());
+module.exports = function () {
+  const app = express();
 
-    app.use(express.urlencoded({extended: true}));
+  app.use(compression());
 
-    app.use(methodOverride());
+  app.use(express.json());
 
-    app.use(cors());
-    // app.use(express.static(process.cwd() + '/public'));
+  app.use(express.urlencoded({ extended: true }));
+
+  app.use(methodOverride());
+
 
     // 음성파일 전달 받기 위한 업로드 의존성
     app.use(fileUpload({
