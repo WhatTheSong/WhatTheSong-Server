@@ -1,7 +1,7 @@
 // 전체 추천 게시글 조회
 async function selectRecommendations(connection, userIdx){
     const selectRecommendationListQuery = `
-        SELECT idx, fileUrl, category
+        SELECT idx, fileUrl, category, title, content, writerIdx, boardType
         FROM Board;
         `;
     const [recommendationListRow] = await connection.query(
@@ -15,7 +15,7 @@ async function selectRecommendations(connection, userIdx){
 // 추천 게시글 상세 조회
 async function selectRecommendation(connection, boardIdx){
     const selectRecommendationQuery = `
-        SELECT idx, writerIdx, fileUrl, category, content
+        SELECT idx, fileUrl, category, title, content, writerIdx
         FROM Board
         WHERE userIdx = ?;
         `;
@@ -30,8 +30,8 @@ async function selectRecommendation(connection, boardIdx){
 // 추천 게시글 생성
 async function insertRecommendation(connection, postRecommendationInfoParams){
     const insertRecommendationQuery = `
-        INSERT INTO Board (fileUrl, category, content, userIdx, writerIdx)
-        VALUE (?, ?, ?, ?, ?);
+        INSERT INTO Board (fileUrl, category, title, content, userIdx, writerIdx)
+        VALUE (?, ?, ?, ?, ?, ?);
         `;
     const insertRecommendationRow = await connection.query(
         insertRecommendationQuery,
