@@ -23,6 +23,7 @@ exports.getUserRefreshToken = async function (userIdx) {
   return userResult[0];
 };
 
+// 유저 idx로 닉네임 조회
 exports.getNickname = async function(userIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
   const nicknameResult = await userDao.selectNickname(connection, userIdx);

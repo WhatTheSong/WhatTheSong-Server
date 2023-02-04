@@ -1,10 +1,11 @@
 const { pool } = require("../../../config/database");
+
+const { response } = require("../../../config/response");
+const { errResponse } = require("../../../config/response");
+const baseResponse = require("../../../config/baseResponseStatus");
+
 const commentDao = require('./commentDao');
 const commentProvider = require("./CommentProvider");
-const userProvider = require('../User/userProvider');
-const { errResponse } = require("../../../config/response");
-const { response } = require("../../../config/response");
-const baseResponse = require("../../../config/baseResponseStatus");
 
 // 댓글 등록
 exports.createComment = async function(postIdx, commentContent, nickname, loggedInUserIdx) {

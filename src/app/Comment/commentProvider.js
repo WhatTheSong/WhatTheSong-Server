@@ -8,7 +8,6 @@ const baseResponse = require("../../../config/baseResponseStatus");
 exports.getComments = async function (postIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const commentListResult = await commentDao.selectComment(connection, postIdx);
-    console.log(commentListResult)
     connection.release();
     if (commentListResult.length === 0) {  // 조회할 댓글 목록이 비어 있을 경우
         return errResponse(baseResponse.COMMENT_EMPTY)

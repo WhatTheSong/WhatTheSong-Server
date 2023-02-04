@@ -2,9 +2,7 @@ module.exports = function(router) {
     const ctrl = require('./commentController');
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
-    // 닉네임 조회 테스트
-    //router.get('/app/posts/nickname',jwtMiddleware, ctrl.getNickname);
-
+    /* 댓글 관련 API */
     // 1. 댓글 목록 조회
     router.get('/app/posts/:postIdx/comments', ctrl.readAllComments);
 
@@ -18,6 +16,7 @@ module.exports = function(router) {
     router.delete('/app/posts/:postIdx/comments/:idx', ctrl.deleteComment);
 
 
+    /* 답글 관련 API */
     // 5. 답글 목록 조회
     router.get('/app/posts/:postIdx/comments/:parentIdx/replies', ctrl.readAllReplies);
 
