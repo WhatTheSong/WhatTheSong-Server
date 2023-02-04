@@ -19,16 +19,11 @@ exports.testNotifications = async(req,res)=>{
     return res.status(200).send("Notification TEST API")
 };
 
-/**
- * API No. 1
- * API Name : 댓글작성 알림 생성
- * [POST] /app/
- * body : {receiverId, senderId}
- */
+
 exports.postReplyNotifications = async(req,res)=>{
     // const targetToken = await notificationProvider.getUserAPNSToken(req.body.receiverId);
     const targetToken = 'test apns target token';
-    // //APNS 토큰을 받아오지 못한다면 기기등록이 되어있지 않다는뜻 -> push 보내지 않아도됨
+    //APNS 토큰을 받아오지 못한다면 기기등록이 되어있지 않다는뜻 -> push 보내지 않아도됨
     // if(!targetToken) console.log("기기가 등록되어있지 않습니다.")
     // const senderName = await user.getUsername();
     const testSender = "테스터"
@@ -36,17 +31,19 @@ exports.postReplyNotifications = async(req,res)=>{
     replyMessage.token = targetToken;
     replyMessage.apns.payload.aps.alert.title = '왓송'
     replyMessage.apns.payload.aps.alert.body = `${testSender}님이 회원님의 게시글에 댓글을 작성했습니다.`;
+    console.log("reply message = ", replyMessage);
+    console.log("before message")
     admin.messaging()
         .send(replyMessage)
         .then(function (response) {
             console.log('Successfully sent message: : ', response)
-            return res.status(200).send(response);
+
         })
         .catch(function (err) {
             console.log('Error Sending message!!! : ', err)
-            return res.status(404).send(err);
-        })
 
+        })
+    return res.status(200).send("Notification Reply API")
 }
 
 /**
@@ -56,9 +53,9 @@ exports.postReplyNotifications = async(req,res)=>{
  * body : {receiverId, senderId}
  */
 exports.postLikeNotifications = async(req,res)=>{
-    const targetToken = await notificationProvider.getUserAPNSToken(req.body.receiverId);
+    // const targetToken = await notificationProvider.getUserAPNSToken(req.body.receiverId);
     //APNS 토큰을 받아오지 못한다면 기기등록이 되어있지 않다는뜻 -> push 보내지 않아도됨
-    if(!targetToken) console.log("기기가 등록되어있지 않습니다.")
+    // if(!targetToken) console.log("기기가 등록되어있지 않습니다.")
 
     // const senderName = await user.getUsername();
     const testSender = "테스터"
@@ -83,10 +80,10 @@ exports.postLikeNotifications = async(req,res)=>{
  * header : jwt
  * body : {receiverId, senderId}
  */
-exports.getNotifications = async(req,res)=>{
-    const userIdFromJWT = req.verifiedToken.userId
-    return res.send(response(baseResponse.SUCCESS, await notificationProvider.getNotifications(userIdFromJWT)));
-};
+// exports.getNotifications = async(req,res)=>{
+//     const userIdFromJWT = req.verifiedToken.userId
+//     return res.send(response(baseResponse.SUCCESS, await notificationProvider.getNotifications(userIdFromJWT)));
+// };
 
 exports.getNotificationsStatus = async(req,res)=>{
 
