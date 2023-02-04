@@ -27,7 +27,7 @@ exports.updateComment = async function(postIdx, commentIdx, commentContent) {
     const connection = await pool.getConnection(async (conn) => conn);
     const commentRow = await commentProvider.getOneComment(postIdx, commentIdx)
     console.log(commentRow, "확인")
-    if (!commentRow) {
+    if (commentRow.length === 0) {
         connection.release();
         return errResponse(baseResponse.COMMENT_COMMENTIDX_NOT_EXIST);
     } else {
@@ -89,7 +89,7 @@ exports.updateReply = async function(postIdx, parentIdx, replyIdx, replyContent)
     const connection = await pool.getConnection(async (conn) => conn);
     const replyRow = await commentProvider.getOneReply(postIdx, parentIdx, replyIdx)
     console.log(replyRow, "확인")
-    if (!replyRow.length) {
+    if (replyRow.length === 0) {
         connection.release();
         return errResponse(baseResponse.COMMENT_REPLYIDX_NOT_EXIST);
     } else {
