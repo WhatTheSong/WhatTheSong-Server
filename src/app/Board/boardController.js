@@ -12,14 +12,14 @@ const {response, errResponse} = require("../../../config/response");
 exports.getRecommendations = async function(req, res){
     /**
      * Path Variable: userIdx
-     * Middleware: userIdx, writerIdx
+     * Middleware: userIdx, nickname
      */
     const userIdx = req.userIdx; // boardService 에서 받아옴
-    const writerIdx = req.writerIdx;
+    const nickname = req.nickname;
 
     const recommendationListResult = await boardProvider.retrieveRecommendationList(
         userIdx,
-        writerIdx
+        nickname
     );
 
     return res.send(recommendationListResult);
@@ -31,12 +31,12 @@ exports.getRecommendations = async function(req, res){
  */
 exports.postRecommendation = async function(req, res){
     /**
-     * Body: fileUrl, writerIdx, content, category
+     * Body: fileUrl, nickname, content, category
      * jwt: userIdx
-     * Middleware: userIdx, writerIdx
+     * Middleware: userIdx, nickname
      */
 
-    const {fileUrl, writerIdx, content, category} = req.body;
+    const {fileUrl, nickname, content, category} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
     const userIdx = req.userIdx;
 
@@ -52,13 +52,13 @@ exports.postRecommendation = async function(req, res){
         return res.send(errResponse(baseResponse.BOARD_CONTENT_EMPTY));
     } else if(!category){
         return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
-    } else if(!writerIdx){
-        return res.send(errResponse(baseResponse.BOARD_WRITERIDX_EMPTY));
+    } else if(!nickname){
+        return res.send(errResponse(baseResponse.BOARD_NICKNAME_EMPTY));
     }
 
     const postRecommendationResponse = await boardService.postRecommendation(
         fileUrl,
-        writerIdx,
+        nickname,
         content,
         userIdx,
         loggedInUserIdx

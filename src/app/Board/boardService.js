@@ -8,7 +8,7 @@ const res = require("express/lib/response");
 
 exports.postRecommendation = async function(
     userIdx,
-    writerIdx,
+    nickname,
     title,
     content
 ){
@@ -16,7 +16,7 @@ exports.postRecommendation = async function(
     try{
         const postRecommendationInfoParams = [
             userIdx,
-            writerIdx,
+            nickname,
             title,
             content,
         ];
@@ -36,23 +36,23 @@ exports.postRecommendation = async function(
     }
 };
 
-exports.deleteRecommendation = async function(recommendationIdx, writerIdx){
+exports.deleteRecommendation = async function(boardIdx, nickname){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(recommendationIdx);
+        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
         // 추천 게시글 존재 확인
         if(!isExistRecommendation){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
         // 작성자 검증
-        if(writerIdx !== isExistRecommendation.writerIdx){
+        if(nickname !== isExistRecommendation.nickname){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
 
         await connection.beginTransaction();
         const deleteRecommendationResult = await boardDao.deleteRecommendation(
             connection,
-            recommendationIdx
+            boardIdx
         );
         await connection.commit();
         return response(baseResponse.SUCCESS);
@@ -65,23 +65,23 @@ exports.deleteRecommendation = async function(recommendationIdx, writerIdx){
     }
 };
 
-exports.patchRecommendation = async function(recommendationIdx, writerIdx){
+exports.patchRecommendation = async function(boardIdx, nickname){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(recommendationIdx);
+        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
         // 추천 게시글 존재 확인
         if(!isExistRecommendation){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
         // 작성자 검증
-        if(writerIdx !== isExistRecommendation.writerIdx){
+        if(nickname !== isExistRecommendation.nickname){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
 
         await connection.beginTransaction();
         const patchRecommendationResult = await boardDao.updateRecommendation(
             connection,
-            recommendationIdx
+            boardIdx
         );
         await connection.commit();
         return response(baseResponse.SUCCESS);

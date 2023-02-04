@@ -13,7 +13,7 @@ async function selectRecommendations(connection, userIdx){
 }
 
 // 추천 게시글 상세 조회
-async function selectRecommendation(connection, recommendationIdx){
+async function selectRecommendation(connection, boardIdx){
     const selectRecommendationQuery = `
         SELECT idx, writerIdx, fileUrl, category, content
         FROM Board
@@ -21,7 +21,7 @@ async function selectRecommendation(connection, recommendationIdx){
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationQuery,
-        recommendationIdx
+        boardIdx
     );
 
     return recommendationListRow[0];
@@ -42,7 +42,7 @@ async function insertRecommendation(connection, postRecommendationInfoParams){
 }
 
 // 추천 게시글 삭제
-async function deleteRecommendation(connection, recommendationIdx){
+async function deleteRecommendation(connection, boardIdx){
     const deleteRecommendationQuery = `
         DELETED Board
         SET status = "DELETED"
@@ -50,14 +50,14 @@ async function deleteRecommendation(connection, recommendationIdx){
         `;
     const deleteRecommendationRow = await connection.query(
         deleteRecommendationQuery,
-        recommendationIdx
+        boardIdx
     );
 
     return deleteRecommendationRow[0];
 }
 
 // 추천 게시글 존재 유무 확인 
-async function existRecommendation(connection, recommendationIdx){
+async function existRecommendation(connection, boardIdx){
     const existRecommendationQuery = `
         SELECT writerIdx
         FROM Board
@@ -65,7 +65,7 @@ async function existRecommendation(connection, recommendationIdx){
         `;
     const [recommendationRow] = await connection.query(
         existRecommendationQuery,
-        recommendationIdx
+        boardIdx
     );
 
     return recommendationRow[0];

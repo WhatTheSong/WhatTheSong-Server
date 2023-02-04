@@ -9,7 +9,7 @@ const {
 const boardDao = require("./boardDao");
 
 // 전체 추천 게시글 읽기
-exports.retrieveRecommendationList = async function(userIdx, writerIdx){
+exports.retrieveRecommendationList = async function(userIdx, nickname){
     const connection = await pool.getConnection(async (conn) => conn);
 
     const recommendationList = await boardDao.selectRecommendations(connection,userIdx);
@@ -17,16 +17,16 @@ exports.retrieveRecommendationList = async function(userIdx, writerIdx){
 
     return response(
         baseResponse.SUCCESS,
-        writerIdx,
+        nickname,
         recommendationList
     );
 };
 
 // 추천 게시글 상세 조회
-exports.retrieveRecommendation = async function(recommendationIdx){
+exports.retrieveRecommendation = async function(boardIdx){
     const connection = await pool.getConnection(async (conn) => conn);
 
-    const recommendation = await boardDao.selectRecommendation(connection, recommendationIdx);
+    const recommendation = await boardDao.selectRecommendation(connection, boardIdx);
 
     connection.release();
     
@@ -38,12 +38,12 @@ exports.retrieveRecommendation = async function(recommendationIdx){
 };
 
 // 추천 게시글 존재 유무 확인
-exports.recommendationCheck = async function(recommendationIdx){
+exports.recommendationCheck = async function(boardIdx){
     const connection = await pool.getConnection(async (conn) => conn);
 
     const recommendationRow = await boardDao.existRecommendation(
         connection,
-        recommendationIdx
+        boardIdx
     );
 
     connection.release();
