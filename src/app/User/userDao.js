@@ -1,92 +1,104 @@
-// 모든 유저 조회
-async function selectUser(connection) {
-  const selectUserListQuery = `
-                SELECT idx
-                FROM MemberUser;
-                `;
-  const [userRows] = await connection.query(selectUserListQuery);
-  return userRows;
-}
-
-// 이메일로 회원 조회
-async function selectUserEmail(connection, email) {
-  const selectUserEmailQuery = `
-                SELECT email, nickname 
-                FROM UserInfo 
-                WHERE email = ?;
-                `;
-  const [emailRows] = await connection.query(selectUserEmailQuery, email);
-  return emailRows;
-}
-
-// userId 회원 조회
-async function selectUserId(connection, userId) {
-  const selectUserIdQuery = `
-                 SELECT id, email, nickname 
-                 FROM UserInfo 
-                 WHERE id = ?;
+// oauthId로 유저 조회
+async function selectUserOauthId(connection, selectUserOauthIdParams) {
+  const selectUserOauthIdQuery = `
+                 SELECT * 
+                 FROM User
+                 WHERE oauthProvider = ? AND oauthId = ?;
                  `;
-  const [userRow] = await connection.query(selectUserIdQuery, userId);
+  const [userRow] = await connection.query(
+    selectUserOauthIdQuery,
+    selectUserOauthIdParams
+  );
   return userRow;
 }
 
 // 유저 생성
 async function insertUserInfo(connection, insertUserInfoParams) {
   const insertUserInfoQuery = `
-        INSERT INTO UserInfo(email, password, nickname)
-        VALUES (?, ?, ?);
+        INSERT INTO User(oauthProvider, oauthId, email, name, refreshToken)
+        VALUES (?, ?, ?, ?, ?);
     `;
-  const insertUserInfoRow = await connection.query(
-    insertUserInfoQuery,
-    insertUserInfoParams
+  await connection.query(insertUserInfoQuery, insertUserInfoParams);
+
+  return;
+}
+
+// 유저 refreshToken 재발급 (oauthId)
+async function updateUserRefreshToken_oauthId(
+  connection,
+  updateUserRefreshTokenParams
+) {
+  const updateUserRefreshTokenQuery = `
+        UPDATE User
+        SET refreshToken = ?
+        WHERE oauthId = ?
+    `;
+  await connection.query(
+    updateUserRefreshTokenQuery,
+    updateUserRefreshTokenParams
   );
 
-  return insertUserInfoRow;
+  return;
 }
 
-// 패스워드 체크
-async function selectUserPassword(connection, selectUserPasswordParams) {
-  const selectUserPasswordQuery = `
-        SELECT email, nickname, password
-        FROM UserInfo 
-        WHERE email = ? AND password = ?;`;
-  const selectUserPasswordRow = await connection.query(
-      selectUserPasswordQuery,
-      selectUserPasswordParams
+// 유저 refreshToken 재발급 (userIdx)
+async function updateUserRefreshToken_userIdx(
+  connection,
+  updateUserRefreshTokenParams
+) {
+  const updateUserRefreshTokenQuery = `
+        UPDATE User
+        SET refreshToken = ?
+        WHERE idx = ?
+    `;
+  await connection.query(
+    updateUserRefreshTokenQuery,
+    updateUserRefreshTokenParams
   );
 
-  return selectUserPasswordRow;
+  return;
 }
 
-// 유저 계정 상태 체크 (jwt 생성 위해 id 값도 가져온다.)
-async function selectUserAccount(connection, email) {
-  const selectUserAccountQuery = `
-        SELECT status, id
-        FROM UserInfo 
-        WHERE email = ?;`;
-  const selectUserAccountRow = await connection.query(
-      selectUserAccountQuery,
-      email
+// 유저 refreshToken 조회
+async function selectUserRefreshToken(connection, userIdx) {
+  const selectUserRefreshTokenQuery = `
+                 SELECT refreshToken
+                 FROM User
+                 WHERE idx = ?;
+                 `;
+  const [userRow] = await connection.query(
+    selectUserRefreshTokenQuery,
+    userIdx
   );
-  return selectUserAccountRow[0];
+  return userRow;
 }
 
-async function updateUserInfo(connection, id, nickname) {
-  const updateUserQuery = `
-  UPDATE UserInfo 
-  SET nickname = ?
-  WHERE id = ?;`;
-  const updateUserRow = await connection.query(updateUserQuery, [nickname, id]);
-  return updateUserRow[0];
+async function updateUserNickname(connection, updateUserInfoParams) {
+  const updateUserNicknameQuery = `
+                 UPDATE User
+                 SET name = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNicknameQuery, updateUserInfoParams);
+  return;
 }
 
+async function updateUserNotification(connection, updateUserInfoParams) {
+  const updateUserNotificationQuery = `
+                 UPDATE User
+                 SET notificationAllow = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNotificationQuery, updateUserInfoParams);
+  return;
+}
 
 module.exports = {
-  selectUser,
-  selectUserEmail,
-  selectUserId,
+  selectUserOauthId,
   insertUserInfo,
-  selectUserPassword,
-  selectUserAccount,
-  updateUserInfo,
+  updateUserRefreshToken_oauthId,
+  updateUserRefreshToken_userIdx,
+  selectUserRefreshToken,
+  updateUserNickname,
+  updateUserNotification,
 };
