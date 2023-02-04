@@ -32,7 +32,7 @@ async function insertComment(connection, postIdx, commentContent, nickname, logg
 async function updateComment(connection, commentContent, postIdx, commentIdx) {
     const updateCommentQuery = `
         UPDATE Comment
-        SET content = ?
+        SET comment = ?
         WHERE postIdx = ? AND idx = ?;`;
     await connection.query(updateCommentQuery, [commentContent, postIdx, commentIdx]);
     return;
@@ -59,21 +59,21 @@ async function selectReply(connection, postIdx, parentIdx) {
 }
 
 // 특정 답글 조회
-async function selectOneReply(connection, parentIdx, postIdx, replyIdx) {
+async function selectOneReply(connection, postIdx, parentIdx, replyIdx) {
     const selectOneReplyQuery = `
         SELECT comment, userIdx, updatedAt, nickname
         FROM Comment
-        WHERE AND postIdx = ? AND parentIdx = ? AND idx = ? status = 'reply';`;
+        WHERE postIdx = ? AND parentIdx = ? AND idx = ? AND status = 'reply';`;
     const replyRow = await connection.query(selectOneReplyQuery, [postIdx, parentIdx, replyIdx]);
     return replyRow[0];
 }
 
 // 답글 등록
-async function insertReply(connection, postIdx, parentIdx, replyContent, nickname) {
+async function insertReply(connection, postIdx, parentIdx, replyContent, nickname, loggedInUserIdx) {
     const insertReplyQuery = `
-        INSERT INTO Comment(postIdx, parentIdx, replyContent, nickname, status)
-        VALUES (?,?,?,?,'reply');`;
-    await connection.query(insertReplyQuery, [postIdx, parentIdx, replyIdx, replyContent, nickname]);
+        INSERT INTO Comment(postIdx, parentIdx, comment, nickname, status, userIdx)
+        VALUES (?,?,?,?,'reply',?);`;
+    await connection.query(insertReplyQuery, [postIdx, parentIdx, replyContent, nickname, loggedInUserIdx]);
     return;
 }
 
@@ -81,7 +81,7 @@ async function insertReply(connection, postIdx, parentIdx, replyContent, nicknam
 async function updateReply(connection, commentContent, postIdx, parentIdx, replyIdx) {
     const updateCommentQuery = `
         UPDATE Comment
-        SET content = ?
+        SET comment = ?
         WHERE postIdx = ? AND parentIdx = ? AND idx = ?;`;
     await connection.query(updateCommentQuery, [commentContent, postIdx, parentIdx, replyIdx]);
     return;
