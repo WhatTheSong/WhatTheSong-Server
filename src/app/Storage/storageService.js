@@ -18,12 +18,12 @@ exports.uploadFileToS3 = async (uploadFile)=>{
     s3.upload(params, (err, data) =>{
         if (err) {
             console.log(`Error uploading file ${uploadFile.name}.`, err);
-            return err
+            return false
 
         }
         if (data) {
             console.log(`File uploaded successfully. ${data.Location}`);
-            return data.Location
+            return true
         }
     });
 }

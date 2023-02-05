@@ -2,9 +2,10 @@ const userProvider = require("../../app/User/userProvider");
 const userService = require("../../app/User/userService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
+const { refreshToken } = require("firebase-admin/app");
 
 /**
- * API Name : 애플 소셜 로그인 API
+ * API Name : 애플 소셜 로그인 API (JWT 발급)
  * [POST] /app/users/oauth/apple
  *
  * Body: authorizationCode
@@ -25,7 +26,7 @@ exports.oauthAppleLogin = async function (req, res) {
 };
 
 /**
- * API Name : 카카오 소셜 로그인 API
+ * API Name : 카카오 소셜 로그인 API (JWT 발급)
  * [POST] /app/users/oauth/kakao
  *
  * Query String: code
@@ -33,28 +34,96 @@ exports.oauthAppleLogin = async function (req, res) {
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
 exports.oauthKakaoLogin = async function (req, res) {
-  const authorizationCode = req.query.code;
-  const error = req.query.error_description;
+  const { oauthId, nickname, email } = req.body;
+  const profile = {
+    provider: "kakao",
+    id: oauthId,
+    email,
+    displayName: nickname,
+  };
 
-  // 카카오 로그인이 정상적으로 수행되지 않았을 경우
-  if (error) {
-    return res.send(errResponse(baseResponse.SOCIAL_LOGIN_REJECT, error));
-  } else if (!authorizationCode) {
-    return res.send(errResponse(baseResponse.SOCIAL_AUTHORIZATION_CODE_EMPTY));
+  // oauthId로 유저 조회
+  const selectUserOauthIdParams = [profile.provider, profile.id];
+  let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+
+  if (!userRow) {
+    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
   }
 
-  const oauthKakaoLoginResponse = await userService.oauthKakaoLogin(
-    authorizationCode
-  );
+  const refreshToken = await userService.createRefreshToken();
 
-  return res.send(oauthKakaoLoginResponse);
+  if (userRow) {
+    await userService.updateUserRefreshToken_oauthId(refreshToken, profile.id);
+  } else {
+    userRow = await userService.createUser(
+      refreshToken,
+      profile,
+      selectUserOauthIdParams
+    );
+  }
+
+  const accessToken = await userService.createAccessToken(userRow.idx);
+
+  return res.send(
+    response(baseResponse.SUCCESS, {
+      userIdx: userRow.idx,
+      accessToken: accessToken,
+      refreshToken: refreshToken,
+    })
+  );
 };
 
 /** JWT 토큰 검증 API
  * [GET] /app/auto-login
  */
 exports.check = async function (req, res) {
-  const userIdResult = req.verifiedToken.userId;
-  console.log(userIdResult);
   return res.send(response(baseResponse.TOKEN_VERIFICATION_SUCCESS));
+};
+
+exports.reissuanceToken = async function (req, res) {
+  const accessToken = req.headers["x-access-token"];
+  const refreshToken = req.headers["x-refresh-token"];
+  if (!accessToken || !refreshToken) {
+    return res.send(errResponse(baseResponse.TOKEN_EMPTY));
+  }
+  const accessTokenResponse = await userService.reissuanceToken(
+    accessToken,
+    refreshToken
+  );
+  return res.send(accessTokenResponse);
+};
+
+exports.editProfile = async function (req, res) {
+  const { userIdx } = req.verifiedToken;
+  const { nickname } = req.body;
+
+  if (!nickname) {
+    return res.send(errResponse(baseResponse.USER_NICKNAME_IS_EMPTY));
+  }
+
+  const editProfileResponse = await userService.updateUserNickname(
+    nickname,
+    userIdx
+  );
+
+  return res.send(editProfileResponse);
+};
+
+exports.editNotificationAllow = async function (req, res) {
+  const { userIdx } = req.verifiedToken;
+  const { isAllow } = req.body;
+  if (!isAllow) {
+    return res.send(errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY));
+  }
+  if (isAllow != 1) {
+    if (isAllow != 2) {
+      return res.send(
+        errResponse(baseResponse.USER_NOTIFICATION_VALUE_IS_EMPTY)
+      );
+    }
+  }
+  const editNotificationAllowResponse =
+    await userService.updateUserNotification(isAllow, userIdx);
+
+  return res.send(editNotificationAllowResponse);
 };

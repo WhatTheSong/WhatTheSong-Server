@@ -4,142 +4,180 @@ const { pool } = require("../../../config/database");
 const userProvider = require("./userProvider");
 const userDao = require("./userDao");
 const baseResponse = require("../../../config/baseResponseStatus");
+const token = require("../../../config/token");
 const { response } = require("../../../config/response");
 const { errResponse } = require("../../../config/response");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-/* 소셜 로그인 */
-const jwt = require("jsonwebtoken");
-const path = require("path");
-const apple = require("apple-auth");
-const { appleOauthConfig } = require("../../../config/appleOauth/config");
-const authApple = new apple(
-  appleOauthConfig,
-  path.join(
-    __dirname,
-    `../../../config/appleOauth/${process.env.APPLE_PRIVATE_KEY_PATH}`
-  )
-);
-const uuid = require("uuid-with-v6");
-const { createJwt } = require("../../../config/token");
-const axios = require("axios");
-const qs = require("qs");
-
-exports.oauthAppleLogin = async function (authorizationCode) {
+exports.createUser = async function (
+  refreshToken,
+  profile,
+  selectUserOauthIdParams
+) {
+  const { provider, id, email, displayName } = profile;
+  const connection = await pool.getConnection(async (conn) => conn);
   try {
-    const accessToken = await authApple.accessToken(authorizationCode);
-    const idToken = jwt.decode(accessToken.id_token);
-    const { email, sub } = idToken;
-
-    // oauthId로 유저 조회
-    const selectUserOauthIdParams = [1, sub];
-    let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
-
-    // user가 조회되지 않으면, 계정 생성
-    if (!userRow) {
-      const rememberMeToken = uuid.v6(); // uuid-with-v6 사용해서 rememberMeToken 생성
-      const insertUserInfoParams = [email, 1, sub, rememberMeToken];
-
-      const connection = await pool.getConnection(async (conn) => conn);
-      try {
-        await connection.beginTransaction();
-        await userDao.insertUserInfo(connection, insertUserInfoParams);
-        await connection.commit();
-      } catch (err) {
-        logger.error(`App - createUser Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
-      } finally {
-        connection.release();
-      }
-    }
-
-    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams); // 다시 user 조회 (bad smell)
-    const userIdx = userRow.idx;
-    // jwt 생성
-    const token = createJwt({
-      userIdx,
-    });
-    const { rememberMeToken } = userRow;
-
-    return response(baseResponse.SUCCESS, {
-      userIdx,
-      jwt: token,
-      rememberMeToken,
-    });
+    await connection.beginTransaction();
+    const insertUserInfoParams = [
+      provider,
+      id,
+      email,
+      displayName,
+      refreshToken,
+    ];
+    await userDao.insertUserInfo(connection, insertUserInfoParams);
+    await connection.commit();
+    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+    return userRow;
   } catch (err) {
-    logger.error(`App - oauthAppleLogin Service error\n: ${err.message}`);
-    return errResponse(baseResponse.SOCIAL_LOGIN_SERVER_ERROR);
+    connection.rollback();
+    logger.error(`App - createUser Service error\n: ${err.message}`);
+    throw new Error(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
   }
 };
 
-exports.oauthKakaoLogin = async function (authorizationCode) {
+exports.updateUserRefreshToken_oauthId = async function (
+  refreshToken,
+  oauthId
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
   try {
-    // authorizationCode -> token 변환
-    const accessToken = (
-      await axios({
-        method: "POST",
-        url: "https://kauth.kakao.com/oauth/token",
-        headers: {
-          "content-type": "application/x-www-form-urlencoded",
-        },
-        data: qs.stringify({
-          grant_type: "authorization_code",
-          client_id: process.env.KAKAO_RESTAPI_KEY,
-          client_secret: process.env.KAKAO_SECRET_KEY,
-          redirectUri: process.env.KAKAO_REDIRECT_URL,
-          code: authorizationCode,
-        }), //객체를 string 으로 변환
-      })
-    ).data.access_token;
+    await connection.beginTransaction();
 
-    const user = await axios({
-      method: "GET",
-      url: "https://kapi.kakao.com/v2/user/me",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
+    const updateUserRefreshTokenParams = [refreshToken, oauthId];
 
-    const sub = user.data.id;
-    const email = user.data.kakao_account.email;
+    await userDao.updateUserRefreshToken_oauthId(
+      connection,
+      updateUserRefreshTokenParams
+    );
+    await connection.commit();
+    return;
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - updateUserRefreshToken_oauthId Service error\n: ${err.message}`
+    );
+    throw new Error(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
 
-    // oauthId로 유저 조회
-    const selectUserOauthIdParams = [2, sub];
-    let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+const updateUserRefreshToken_userIdx = async function (userIdx, refreshToken) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateUserRefreshTokenParams = [refreshToken, userIdx];
+  try {
+    await connection.beginTransaction();
+    await userDao.updateUserRefreshToken_userIdx(
+      connection,
+      updateUserRefreshTokenParams
+    );
+    await connection.commit();
+    return;
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - updateUserRefreshToken_userIdx Service error\n: ${err.message}`
+    );
+    throw errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
 
-    // user가 조회되지 않으면, 계정 생성
-    if (!userRow) {
-      const rememberMeToken = uuid.v6(); // uuid-with-v6 사용해서 rememberMeToken 생성
-      const insertUserInfoParams = [email, 2, sub, rememberMeToken];
+// 토큰 재발급 서비스 로직
+exports.reissuanceToken = async function (accessToken, refreshToken) {
+  try {
+    // 액세스 토큰 검증
+    const checkAccessToken = token.verify(accessToken);
 
-      const connection = await pool.getConnection(async (conn) => conn);
-      try {
-        await connection.beginTransaction();
-        await userDao.insertUserInfo(connection, insertUserInfoParams);
-        await connection.commit();
-        userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams); // 다시 user 조회
-      } catch (err) {
-        logger.error(`App - createUser Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
-      } finally {
-        connection.release();
-      }
+    // 액세스 토큰이 만료되었는지 확인
+    if (checkAccessToken !== "jwt expired") {
+      return errResponse(baseResponse.TOKEN_IS_NOT_EXPIRED);
+    }
+    // 액세스 토큰 만료 시, decode를 통해 payload 값 불러오기 가능
+    const decodeAccessToken = jwt.decode(accessToken);
+
+    // 리프레쉬 토큰 검증
+    const checkRefreshToken = token.verify(refreshToken);
+    // 리프레쉬 토큰이 만료되었는지 확인
+    if (checkRefreshToken == "jwt expired") {
+      return errResponse(baseResponse.TOKEN_REFRESH_EXPIRED);
+    }
+    // header로 들어온 리프레쉬 토큰이 유저가 제일 최근에 받은 리프레쉬 토큰과 동일한지 확인 (보안 강화)
+    const { userIdx } = decodeAccessToken;
+    const userRow = await userProvider.getUserRefreshToken(userIdx);
+
+    if (refreshToken !== userRow.refreshToken) {
+      return errResponse(baseResponse.TOKEN_REFRESH_NOT_MATCHED);
     }
 
-    const userIdx = userRow.idx;
-    // jwt 생성
-    const token = createJwt({
-      userIdx,
-    });
-    const { rememberMeToken } = userRow;
+    // 토큰 재발급
+    const accessJwt = token.access({ userIdx });
+    const refreshJwt = token.refresh();
+    await updateUserRefreshToken_userIdx(userIdx, refreshJwt);
 
     return response(baseResponse.SUCCESS, {
-      userIdx,
-      jwt: token,
-      rememberMeToken,
+      userIdx: userIdx,
+      accessToken: accessJwt,
+      refreshToken: refreshJwt,
     });
   } catch (err) {
-    logger.error(`App - oauthAppleLogin Service error\n: ${err.message}`);
-    return errResponse(baseResponse.SOCIAL_LOGIN_SERVER_ERROR);
+    return err;
+  }
+};
+
+// Access Token 재발급
+exports.createAccessToken = async function (userIdx) {
+  try {
+    return token.access({ userIdx });
+  } catch (err) {
+    return null;
+  }
+};
+
+// Refresh Token 재발급
+exports.createRefreshToken = async function () {
+  try {
+    return token.refresh();
+  } catch (err) {
+    return null;
+  }
+};
+
+exports.updateUserNickname = async function (nickname, userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const updateUserInfoParams = [nickname, userIdx];
+    await userDao.updateUserNickname(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateUserNickname Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+exports.updateUserNotification = async function (isAllow, userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const updateUserInfoParams = [isAllow, userIdx];
+    await userDao.updateUserNotification(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateUserNickname Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
   }
 };

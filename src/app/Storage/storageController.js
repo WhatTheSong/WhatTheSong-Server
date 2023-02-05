@@ -15,7 +15,18 @@ exports.postVoiceToS3 = async(req,res) =>{
     if (!f) return res.status(404).send({msg:"파일이 없다."});
 
     const result = await storageService.uploadFileToS3(f);
-    console.log(result)
+    if(!result) return res.status(404).send({msg:"업로드 실패다"});
 
+    const daoResult = await storageService.postS3URL(result.url);
     return res.status(200).send(`${result}`);
+}
+/**
+ * API No. 2
+ * API Name : S3 링크 조회
+ * [GET] /app/storage/voice/:id
+ * body :
+ */
+exports.getVoice = async(req,res) =>{
+
+    return res.status(200).send(``);
 }
