@@ -31,17 +31,17 @@ exports.getRecommendations = async function(req, res){
  */
 exports.postRecommendation = async function(req, res){
     /**
-     * Body: fileUrl, nickname, content, category
+     * Body: fileUrl, nickname, content, category, title
      * jwt: userIdx
      * Middleware: userIdx, nickname
      */
 
-    const {fileUrl, nickname, content, category} = req.body;
+    const {fileUrl, nickname, content, category, title} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
     const userIdx = req.userIdx;
 
     // 게시글 작성 불가
-    if(loggedInUserIdx == userIdx){
+    if(loggedInUserIdx !== userIdx){
         return res.send(errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH));
     }
 
@@ -54,14 +54,12 @@ exports.postRecommendation = async function(req, res){
         return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
     } else if(!nickname){
         return res.send(errResponse(baseResponse.BOARD_NICKNAME_EMPTY));
+    } else if(!title){
+        return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
     }
 
     const postRecommendationResponse = await boardService.postRecommendation(
-        fileUrl,
-        nickname,
-        content,
-        userIdx,
-        loggedInUserIdx
+        userIdx
     );
     
     return res.send(postRecommendationResponse);
@@ -123,15 +121,13 @@ exports.patchRecommendation = async function(req, res){
      */
     const {recommendationIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
-    const content = req.verifiedToken.userIdx;
 
     if(!recommendationIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
     
     const patchRecommendationResponse = await boardService.patchRecommendation(
         parseInt(recommendationIdx),
-        loggedInUserIdx,
-        content
+        loggedInUserIdx
     );
 
     return res.send(patchRecommendationResponse);

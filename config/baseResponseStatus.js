@@ -106,6 +106,7 @@ module.exports = {
     BOARD_NICKNAME_EMPTY : {"isSuccess": false, "code": 2055, "message": "닉네임을 입력해주세요."},
     BOARD_USERIDX_NOT_MATCH : {"isSuccess": false, "code": 2056, "message": "유저 아이디 값을 확인해주세요."},
     BOARD_USERIDX_EMPTY : {"isSuccess": false, "code": 2057, "message": "해당 유저가 존재하지 않습니다."},
+    BOARD_TITLE_EMPTY : {"isSuccess": false, "code": 2058, "message": "제목을 작성해주세요."},
 
     // Response error
     SIGNUP_REDUNDANT_EMAIL : { "isSuccess": false, "code": 3001, "message":"중복된 이메일입니다." },

@@ -50,3 +50,21 @@ exports.recommendationCheck = async function(boardIdx){
 
     return recommendationRow;
 };
+
+// user status 값 조회
+exports.userStatusCheck = async function(userIdx){
+    const connection = await pool.getConnection(async (conn) => conn);
+
+    const userRow = await boardDao.selectUserIdx(connection, userIdx);
+    if(!userRow)    return errResponse(baseResponse.USER_ID_NOT_MATCH);
+
+    connection.release();
+
+    if(userRow.status == "BANNED"){
+        return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
+    }
+    if(userRow.status == "DELETED"){
+        return errResponse(baseResponse.SIGNIN_WITHDRAWAL_ACCOUNT);
+    }
+    return;
+}

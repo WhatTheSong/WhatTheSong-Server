@@ -1,4 +1,5 @@
 // 전체 추천 게시글 조회
+// writerIdx == nickname(mysql에 nickname을 writerIdx로 작성함)
 async function selectRecommendations(connection, userIdx){
     const selectRecommendationListQuery = `
         SELECT idx, fileUrl, category, title, content, writerIdx, boardType
@@ -86,6 +87,18 @@ async function updateRecommendation(connection, postRecommendationInfoParams){
     return updateRecommendationRow[0];
 }
 
+// 유저 조회
+async function selectUserIdx(connection, userIdx){
+    const selectUserIdxQuery = `
+        SELECT idx, status
+        FROM User
+        where idx = ?;
+    `;
+    const [userRow] = await connection.query(selectUserIdxQuery, userIdx);
+
+    return userRow[0];
+}
+
 module.exports = {
     selectRecommendations,
     selectRecommendation,
@@ -93,4 +106,5 @@ module.exports = {
     deleteRecommendation,
     existRecommendation,
     updateRecommendation,
+    selectUserIdx,
 };

@@ -10,8 +10,16 @@ exports.postRecommendation = async function(
     userIdx,
     nickname,
     title,
-    content
+    content,
+    fileUrl,
+    category
 ){
+    // 게시글 생성자 status 검사
+    const checkUserStatus = await boardProvider.userStatusCheck(nickname);
+    if(checkUserStatus){
+        return checkUserStatus;
+    }
+
     const connection = await pool.getConnection(async (conn) => conn);
     try{
         const postRecommendationInfoParams = [
@@ -19,6 +27,8 @@ exports.postRecommendation = async function(
             nickname,
             title,
             content,
+            fileUrl,
+            category,
         ];
         await connection.beginTransaction();
         const postRecommendationResult = await boardDao.insertRecommendation(
