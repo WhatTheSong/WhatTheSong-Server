@@ -7,7 +7,7 @@ module.exports = function(app){
 
     // 추천 게시글 작성 API
     app.post(
-        "/app/boards/:userIdx/recommendations/:recommendationIdx",
+        "/app/boards/:userIdx/recommendations/:recommendationIdx/contents",
         jwtMiddleware,
         board.postRecommendation
     );
@@ -21,14 +21,14 @@ module.exports = function(app){
 
     // 추천 게시글 삭제 API
     app.delete(
-        "/app/boards/:userIdx/recommendatons/:recommendationIdx",
+        "/app/boards/:userIdx/recommendatons/:recommendationIdx/contents/:contetIdx",
         jwtMiddleware,
         board.deleteRecommendation
     );
 
     // 추천 게시글 수정 API
     app.patch(
-        "/app/boards/:userIdx/recommendatons/:recommendationIdx",
+        "/app/boards/:userIdx/recommendatons/:recommendationIdx/contents/:contentIdx",
         jwtMiddleware,
         board.patchRecommendation
     );

@@ -27,7 +27,7 @@ exports.getRecommendations = async function(req, res){
 
 /**
  * API NAME: 추천 게시글 작성 API
- * [POST] /app/boards/:userIdx/recommendations/:recommendationIdx
+ * [POST] /app/boards/:userIdx/recommendations/:recommendationIdx/contents
  */
 exports.postRecommendation = async function(req, res){
     /**
@@ -91,7 +91,7 @@ exports.getRecommendation = async function(req, res){
 
 /**
  * API NAME: 게시글 삭제 API
- * [DELETE] /app/boards/:userIdx/recommendations/:recommendationIdx
+ * [DELETE] /app/boards/:userIdx/recommendations/:recommendationIdx/contents/:contentsIdx
  */
 exports.deleteRecommendation = async function(req, res){
     /**
@@ -113,7 +113,7 @@ exports.deleteRecommendation = async function(req, res){
 
 /**
  * API NAME: 게시글 수정 API
- * [PATCH] /app/boards/:userIdx/recommendations/:recommendationIdx
+ * [PATCH] /app/boards/:userIdx/recommendations/:recommendationIdx/contents/:contentsIdx
  */
 exports.patchRecommendation = async function(req, res){
     /**
