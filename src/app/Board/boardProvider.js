@@ -8,7 +8,7 @@ const {
 
 const boardDao = require("./boardDao");
 
-// 전체 추천 게시글 읽기
+// 전체 추천 게시글 조회
 exports.retrieveRecommendationList = async function(userIdx, nickname){
     const connection = await pool.getConnection(async (conn) => conn);
 

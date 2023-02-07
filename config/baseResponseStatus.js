@@ -103,7 +103,6 @@ module.exports = {
     BOARD_FILEURL_EMPTY : {"isSuccess": false, "code": 2052, "message": "파일을 넣어주세요."},
     BOARD_CONTENT_EMPTY : {"isSuccess": false, "code": 2053, "message": "내용을 작성해주세요."},
     BOARD_CATEGORY_EMPTY : {"isSuccess": false, "code": 2054, "message": "카테고리를 선택해주세요."},
-    BOARD_NICKNAME_EMPTY : {"isSuccess": false, "code": 2055, "message": "닉네임을 입력해주세요."},
     BOARD_USERIDX_NOT_MATCH : {"isSuccess": false, "code": 2056, "message": "유저 아이디 값을 확인해주세요."},
     BOARD_USERIDX_EMPTY : {"isSuccess": false, "code": 2057, "message": "해당 유저가 존재하지 않습니다."},
     BOARD_TITLE_EMPTY : {"isSuccess": false, "code": 2058, "message": "제목을 작성해주세요."},

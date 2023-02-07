@@ -5,13 +5,14 @@ const boardDao = require("./boardDao");
 const baseResponse = require("../../../config/baseResponseStatus");
 const {response, errResponse} = require("../../../config/response");
 const res = require("express/lib/response");
+const userProvider = require("../User/userProvider");
 
 exports.postRecommendation = async function(
     userIdx,
     nickname,
+    fileUrl,
     title,
     content,
-    fileUrl,
     category
 ){
     // 게시글 생성자 status 검사
@@ -25,10 +26,10 @@ exports.postRecommendation = async function(
         const postRecommendationInfoParams = [
             userIdx,
             nickname,
+            fileUrl,
             title,
             content,
-            fileUrl,
-            category,
+            category
         ];
         await connection.beginTransaction();
         const postRecommendationResult = await boardDao.insertRecommendation(

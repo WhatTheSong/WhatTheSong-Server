@@ -92,8 +92,9 @@ async function selectUserIdx(connection, userIdx){
     const selectUserIdxQuery = `
         SELECT idx, status
         FROM User
-        where idx = ?;
+        WHERE idx = ?;
     `;
+    console.log(userIdx);
     const [userRow] = await connection.query(selectUserIdxQuery, userIdx);
 
     return userRow[0];

@@ -31,19 +31,15 @@ exports.getRecommendations = async function(req, res){
  */
 exports.postRecommendation = async function(req, res){
     /**
-     * Body: fileUrl, nickname, content, category, title
+     * Body: fileUrl, content, category, title
      * jwt: userIdx
      * Middleware: userIdx, nickname
      */
 
-    const {fileUrl, nickname, content, category, title} = req.body;
+    const {fileUrl, content, category, title} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
-    const userIdx = req.userIdx;
-
-    // 게시글 작성 불가
-    if(loggedInUserIdx !== userIdx){
-        return res.send(errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH));
-    }
+    const nickname = await userProvider.getNickname(loggedInUserIdx);
+    //const userIdx = parseInt(req.params.userIdx);
 
     // 형식적 validation 처리
     if(!fileUrl){
@@ -52,14 +48,17 @@ exports.postRecommendation = async function(req, res){
         return res.send(errResponse(baseResponse.BOARD_CONTENT_EMPTY));
     } else if(!category){
         return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
-    } else if(!nickname){
-        return res.send(errResponse(baseResponse.BOARD_NICKNAME_EMPTY));
     } else if(!title){
         return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
     }
 
     const postRecommendationResponse = await boardService.postRecommendation(
-        userIdx
+        loggedInUserIdx,
+        nickname,
+        fileUrl,
+        title,
+        content,
+        category
     );
     
     return res.send(postRecommendationResponse);
