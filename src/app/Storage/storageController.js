@@ -12,21 +12,27 @@ const { response, errResponse } = require("../../../config/response");
  */
 exports.postVoiceToS3 = async(req,res) =>{
     const f = req.files.uploadFiles;
-    if (!f) return res.status(404).send({msg:"파일이 없다."});
+    // const postId =  req.body.postId;
+    if (!f) return res.status(404).send(errResponse(baseResponse.STORAGE_FILE_EMPTY));
 
     const result = await storageService.uploadFileToS3(f);
-    if(!result) return res.status(404).send({msg:"업로드 실패다"});
-
-    const daoResult = await storageService.postS3URL(result.url);
-    return res.status(200).send(`${result}`);
+    if(!result) return res.status(404).send(response(baseResponse.STORAGE_S3_ERROR));
+    const testId = 1;
+    const daoResult = await storageService.postS3URL(testId,result);
+    return res.status(200).send(response(baseResponse.SUCCESS,true));
 }
 /**
  * API No. 2
- * API Name : S3 링크 조회
- * [GET] /app/storage/voice/:id
+ * API Name : 게시글 idx로 S3 링크 조회
+ * [GET] /app/storage/voice/:boardIdx
  * body :
  */
-exports.getVoice = async(req,res) =>{
+exports.getVoiceByIdx = async(req,res) =>{
+    const boardIdx = req.params.boardIdx
 
-    return res.status(200).send(``);
+    if(!boardIdx) return res.status(404).send(errResponse(baseResponse.BOARDIDX_EMPTY))
+
+    const daoResult = await storageProvider.getS3URL(boardIdx);
+
+    return res.status(200).send(response(baseResponse.SUCCESS, daoResult));
 }
