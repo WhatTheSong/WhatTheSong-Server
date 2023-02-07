@@ -40,6 +40,11 @@ module.exports = {
     code: 2004,
     message: "푸시 알람 동의 여부 값이 잘못되었습니다.",
   },
+  USER_PROVIDER_IS_EMPTY: {
+    isSuccess: false,
+    code: 2005,
+    message: "소셜 로그인 종류를 입력해주세요.",
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
