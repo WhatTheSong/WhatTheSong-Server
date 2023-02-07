@@ -25,15 +25,25 @@ module.exports = {
     code: 2001,
     message: "해당 회원이 존재하지 않습니다.",
   },
-  SOCIAL_AUTHORIZATION_CODE_EMPTY: {
+  USER_NICKNAME_IS_EMPTY: {
     isSuccess: false,
     code: 2002,
-    message: "authorizationCode를 입력해주세요.",
+    message: "닉네임을 입력해주세요.",
   },
   SOCIAL_LOGIN_REJECT: {
     isSuccess: false,
     code: 2003,
     message: "소셜 로그인이 정상적으로 수행되지 않았습니다. 다시 시도해주세요.",
+  },
+  USER_NOTIFICATION_VALUE_IS_EMPTY: {
+    isSuccess: false,
+    code: 2004,
+    message: "푸시 알람 동의 여부 값이 잘못되었습니다.",
+  },
+  USER_PROVIDER_IS_EMPTY: {
+    isSuccess: false,
+    code: 2005,
+    message: "소셜 로그인 종류 값이 잘못되었습니다.",
   },
 
   // Response error

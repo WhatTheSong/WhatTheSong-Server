@@ -84,6 +84,26 @@ async function selectUserRefreshToken(connection, userIdx) {
   return userRow;
 }
 
+async function updateUserNickname(connection, updateUserInfoParams) {
+  const updateUserNicknameQuery = `
+                 UPDATE User
+                 SET name = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNicknameQuery, updateUserInfoParams);
+  return;
+}
+
+async function updateUserNotification(connection, updateUserInfoParams) {
+  const updateUserNotificationQuery = `
+                 UPDATE User
+                 SET notificationAllow = ?
+                 WHERE idx = ?;
+                 `;
+  await connection.query(updateUserNotificationQuery, updateUserInfoParams);
+  return;
+}
+
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
@@ -91,4 +111,6 @@ module.exports = {
   updateUserRefreshToken_oauthId,
   updateUserRefreshToken_userIdx,
   selectUserRefreshToken,
+  updateUserNickname,
+  updateUserNotification,
 };
