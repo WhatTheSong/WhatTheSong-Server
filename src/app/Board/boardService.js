@@ -9,28 +9,23 @@ const userProvider = require("../User/userProvider");
 
 exports.postRecommendation = async function(
     userIdx,
-    nickname,
     fileUrl,
     title,
     content,
     category
 ){
-    // 게시글 생성자 status 검사
-    const checkUserStatus = await boardProvider.userStatusCheck(nickname);
-    if(checkUserStatus){
-        return checkUserStatus;
-    }
-
     const connection = await pool.getConnection(async (conn) => conn);
+    
+    const postRecommendationInfoParams = [
+        userIdx,
+        fileUrl,
+        title,
+        content,
+        category
+    ];
+    console.log("유저아이디",postRecommendationInfoParams);
     try{
-        const postRecommendationInfoParams = [
-            userIdx,
-            nickname,
-            fileUrl,
-            title,
-            content,
-            category
-        ];
+        
         await connection.beginTransaction();
         const postRecommendationResult = await boardDao.insertRecommendation(
             connection,
@@ -41,10 +36,13 @@ exports.postRecommendation = async function(
     }catch(err){
         await connection.rollback();
         logger.error(`Web - postRecommendation Service error\n: ${err.content}`);
+        console.log(err);
+
         return errResponse(baseResponse.DB_ERROR);
     }finally{
         connection.release();
     }
+    
 };
 
 exports.deleteRecommendation = async function(boardIdx, nickname){

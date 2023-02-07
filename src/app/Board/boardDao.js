@@ -31,8 +31,8 @@ async function selectRecommendation(connection, boardIdx){
 // 추천 게시글 생성
 async function insertRecommendation(connection, postRecommendationInfoParams){
     const insertRecommendationQuery = `
-        INSERT INTO Board (fileUrl, category, title, content, userIdx, writerIdx)
-        VALUE (?, ?, ?, ?, ?, ?);
+        INSERT INTO Board (writerIdx, fileUrl, title, content, category)
+        VALUE (?, ?, ?, ?, ?);
         `;
     const insertRecommendationRow = await connection.query(
         insertRecommendationQuery,
