@@ -1,5 +1,6 @@
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
+
 const storageDao = require("./storageDao");
 const AWS = require('aws-sdk');
 const {pool} = require("../../../config/database");
@@ -9,11 +10,13 @@ const {logger} = require("../../../config/winston");
 exports.uploadFileToS3 = async (uploadFile)=>{
 
     // AWS 설정
+
     AWS.config.update({
         accessKeyId: process.env.AWS_ACCESS_KEY_ID,
         secretAccessKey: process.env.AWS_SECRET_KEY,
         region: process.env.AWS_REGION
     });
+
 
     // 업로드파일을 base64데이터로 변환
     const base64data = new  Buffer.alloc(uploadFile.size, uploadFile,'binary');
@@ -62,5 +65,6 @@ exports.postS3URL = async (postId,url) =>{
         connection.release();
     }
 };
+
 
 

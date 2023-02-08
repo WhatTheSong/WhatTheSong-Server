@@ -10,11 +10,11 @@ module.exports = (app) => {
     app.post('/app/notifications/reply', notification.postReplyNotifications);
 
     // 1-2. 공감 알림 생성
-    // app.post('/app/notification/like', notification.postLikeNotifications);
+    // app.post('/app/notifications/like', notification.postLikeNotifications);
 
     // 2. 알림조회
-    // app.get('/app/notification/:id', notification.getNotifications);
+    // app.get('/app/notifications/:id', notification.getNotifications);
 
     // 3. 알림 상태조회
-    // app.get('/app/notification/status/:id', notification.getNotificationsStatus);
+    // app.get('/app/notifications/status/:id', notification.getNotificationsStatus);
 };

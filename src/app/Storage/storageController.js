@@ -35,4 +35,5 @@ exports.getVoiceByIdx = async(req,res) =>{
     const daoResult = await storageProvider.getS3URL(boardIdx);
 
     return res.status(200).send(response(baseResponse.SUCCESS, daoResult));
+
 }

@@ -5,38 +5,21 @@ const { response, errResponse } = require("../../../config/response");
 const { refreshToken } = require("firebase-admin/app");
 
 /**
- * API Name : 애플 소셜 로그인 API (JWT 발급)
- * [POST] /app/users/oauth/apple
- *
- * Body: authorizationCode
- *
- * Response: jwt, userIdx, rememberMeToken(자동 로그인)
- */
-exports.oauthAppleLogin = async function (req, res) {
-  const { authorizationCode } = req.body;
-
-  if (!authorizationCode) {
-    return res.send(errResponse(baseResponse.SOCIAL_AUTHORIZATION_CODE_EMPTY));
-  }
-
-  const oauthAppleLoginResponse =
-    userService.oauthAppleLogin(authorizationCode);
-
-  return res.send(oauthAppleLoginResponse);
-};
-
-/**
- * API Name : 카카오 소셜 로그인 API (JWT 발급)
- * [POST] /app/users/oauth/kakao
+ * API Name : 소셜 로그인 API (JWT 발급)
+ * [POST] /app/users/oauth
  *
  * Query String: code
  *
  * Response: jwt, userIdx, rememberMeToken(자동 로그인)
  */
-exports.oauthKakaoLogin = async function (req, res) {
+exports.oauthLogin = async function (req, res) {
   const { oauthId, nickname, email } = req.body;
+  const { oauthProvider } = req.query;
+  if (oauthProvider != "kakao" && oauthProvider != "apple") {
+    return res.send(errResponse(baseResponse.USER_PROVIDER_IS_EMPTY));
+  }
   const profile = {
-    provider: "kakao",
+    provider: oauthProvider,
     id: oauthId,
     email,
     displayName: nickname,
@@ -45,10 +28,6 @@ exports.oauthKakaoLogin = async function (req, res) {
   // oauthId로 유저 조회
   const selectUserOauthIdParams = [profile.provider, profile.id];
   let userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
-
-  if (!userRow) {
-    return res.send(errResponse(baseResponse.USER_USERID_NOT_EXIST));
-  }
 
   const refreshToken = await userService.createRefreshToken();
 

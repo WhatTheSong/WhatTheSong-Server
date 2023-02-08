@@ -7,4 +7,5 @@ module.exports = (app) => {
 
     // 파일 경로 조회
     app.get("/app/storages/voice/:boardIdx", storage.getVoiceByIdx);
+
 }

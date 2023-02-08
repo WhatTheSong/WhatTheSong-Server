@@ -23,6 +23,17 @@ async function insertUserInfo(connection, insertUserInfoParams) {
   return;
 }
 
+// 유저 id로 닉네임 조회
+async function selectNickname(connection, userIdx) {
+  const selectNicknameQuery = `
+    SELECT name
+    FROM User
+    WHERE idx = ?;`;
+  const nickname = await connection.query(selectNicknameQuery, userIdx);
+  //console.log(nickname)
+  return nickname[0];
+}
+
 // 유저 refreshToken 재발급 (oauthId)
 async function updateUserRefreshToken_oauthId(
   connection,
@@ -96,6 +107,7 @@ async function updateUserNotification(connection, updateUserInfoParams) {
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
+  selectNickname,
   updateUserRefreshToken_oauthId,
   updateUserRefreshToken_userIdx,
   selectUserRefreshToken,
