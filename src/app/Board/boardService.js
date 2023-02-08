@@ -9,23 +9,32 @@ const userProvider = require("../User/userProvider");
 
 exports.postRecommendation = async function(
     userIdx,
+    nickname,
     fileUrl,
     title,
     content,
-    category
+    category,
+    boardType
 ){
+    // 게시글 생성자 status 검사
+    const checkUserStatus = await boardProvider.userStatusCheck(userIdx);
+    if (checkUserStatus) {
+        return checkUserStatus;
+    }
+
     const connection = await pool.getConnection(async (conn) => conn);
     
     const postRecommendationInfoParams = [
         userIdx,
+        nickname,
         fileUrl,
         title,
         content,
-        category
+        category,
+        boardType,
     ];
     console.log("유저아이디",postRecommendationInfoParams);
     try{
-        
         await connection.beginTransaction();
         const postRecommendationResult = await boardDao.insertRecommendation(
             connection,
@@ -45,7 +54,7 @@ exports.postRecommendation = async function(
     
 };
 
-exports.deleteRecommendation = async function(boardIdx, nickname){
+exports.deleteRecommendation = async function(userIdx, boardIdx){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
         const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
@@ -54,7 +63,7 @@ exports.deleteRecommendation = async function(boardIdx, nickname){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
         // 작성자 검증
-        if(nickname !== isExistRecommendation.nickname){
+        if(userIdx !== isExistRecommendation.userIdx){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
 
@@ -68,6 +77,7 @@ exports.deleteRecommendation = async function(boardIdx, nickname){
     } catch(err){
         await connection.rollback();
         logger.error(`Web - deleteRecommendation Service error\n: ${err.content}`);
+        console.log(err);
         return errResponse(baseResponse.DB_ERROR);
     } finally{
         connection.release();

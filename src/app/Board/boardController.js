@@ -7,19 +7,21 @@ const {response, errResponse} = require("../../../config/response");
 
 /**
  * API NAME : 전체 추천 게시글 조회 API
- * [GET] /app/boards/:userIdx/recommendations
+ * [GET] /app/boards/:boardType/contents
  */
 exports.getRecommendations = async function(req, res){
     /**
-     * Path Variable: userIdx
-     * Middleware: userIdx, nickname
+     * Path Variable: boardType
+     * Middleware: boardType, nickname
      */
-    const userIdx = req.userIdx; // boardService 에서 받아옴
-    const nickname = req.nickname;
+
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+    const nickname = userProvider.getNickname(loggedInUserIdx);
+    const boardType = req.params.boardType;
 
     const recommendationListResult = await boardProvider.retrieveRecommendationList(
-        userIdx,
-        nickname
+        nickname,
+        boardType
     );
 
     return res.send(recommendationListResult);
@@ -27,7 +29,7 @@ exports.getRecommendations = async function(req, res){
 
 /**
  * API NAME: 추천 게시글 작성 API
- * [POST] /app/boards/:userIdx/recommendations/:recommendationIdx/contents
+ * [POST] /app/boards/:boardType/contents
  */
 exports.postRecommendation = async function(req, res){
     /**
@@ -38,6 +40,7 @@ exports.postRecommendation = async function(req, res){
 
     const {fileUrl, content, category, title} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
+    const {boardType}= req.params
     const nickname = await userProvider.getNickname(loggedInUserIdx);
     //const userIdx = parseInt(req.params.userIdx);
 
@@ -50,6 +53,8 @@ exports.postRecommendation = async function(req, res){
         return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
     } else if(!title){
         return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
+    } else if(!nickname){
+        return res.send(errResponse(baseResponse.BOARD_NICKNAME_EMPTY));
     }
 
     const postRecommendationResponse = await boardService.postRecommendation(
@@ -58,52 +63,47 @@ exports.postRecommendation = async function(req, res){
         fileUrl,
         title,
         content,
-        category
+        category,
+        boardType,
     );
-    
+
     return res.send(postRecommendationResponse);
 };
 
 /**
  * API NAME: 추천 게시글 상세 조회 API
- * [GET]: /app/boards/:userIdx/recommendatons/:recommendationIdx
+ * [GET]: /app/boards/:boardType/contents/:boardIdx
  */
 exports.getRecommendation = async function(req, res){
     /**
-     * Path Variable: userIdx, recommendationIdx
+     * Path Variable: boardIdx
      */
-    const {recommendationIdx} = req.params;
-    const loggedInUserIdx = req.verifiedToken.userIdx;
-    const userIdx = req.userIdx;
-
-    if(!recommendationIdx)  
+    const {boardIdx} = req.params;
+    
+    if(!boardIdx)  
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
-    // 게시글 주인 검증
-    if(loggedInUserIdx != userIdx){
-        return res.send(errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH));
-    }
-
-    const recommendationResult = await boardProvider.retrieveRecommendation(recommendationIdx);
+    
+    const recommendationResult = await boardProvider.retrieveRecommendation(boardIdx);
 
     return res.send(recommendationResult);
 };
 
 /**
  * API NAME: 게시글 삭제 API
- * [DELETE] /app/boards/:userIdx/recommendations/:recommendationIdx/contents/:contentsIdx
+ * [DELETE] /app/boards/:boardType/contents/:boardIdx
  */
 exports.deleteRecommendation = async function(req, res){
     /**
-     * Path Variable: userIdx, recommendationIdx
+     * Path Variable: userIdx, boardIdx
      */
-    const {recommendationIdx} = req.params;
+    const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
 
-    if(!recommendationIdx)
+    if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
 
     const deleteRecommendationResponse = await boardService.deleteRecommendation(
-        parseInt(recommendationIdx),
+        parseInt(boardIdx),
         loggedInUserIdx
     );
 
@@ -112,20 +112,20 @@ exports.deleteRecommendation = async function(req, res){
 
 /**
  * API NAME: 게시글 수정 API
- * [PATCH] /app/boards/:userIdx/recommendations/:recommendationIdx/contents/:contentsIdx
+ * [PATCH] /app/boards/:boardType/contents/:boardIdx
  */
 exports.patchRecommendation = async function(req, res){
     /**
-     * Path Variable: userIdx, recommendationIdx
+     * Path Variable: userIdx, boardIdx
      */
-    const {recommendationIdx} = req.params;
+    const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
 
-    if(!recommendationIdx)
+    if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
     
     const patchRecommendationResponse = await boardService.patchRecommendation(
-        parseInt(recommendationIdx),
+        parseInt(boardIdx),
         loggedInUserIdx
     );
 

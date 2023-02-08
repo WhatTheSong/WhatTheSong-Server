@@ -9,12 +9,12 @@ const {
 const boardDao = require("./boardDao");
 
 // 전체 추천 게시글 조회
-exports.retrieveRecommendationList = async function(userIdx, nickname){
+exports.retrieveRecommendationList = async function(nickname, boardType){
     const connection = await pool.getConnection(async (conn) => conn);
 
-    const recommendationList = await boardDao.selectRecommendations(connection,userIdx);
+    const recommendationList = await boardDao.selectRecommendations(connection, boardType);
     connection.release();
-
+    console.log(recommendationList);
     return response(
         baseResponse.SUCCESS,
         nickname,
@@ -27,13 +27,13 @@ exports.retrieveRecommendation = async function(boardIdx){
     const connection = await pool.getConnection(async (conn) => conn);
 
     const recommendation = await boardDao.selectRecommendation(connection, boardIdx);
-
+    console.log(recommendation);
     connection.release();
     
     if(!recommendation){
         return errResponse(baseResponse.BOARD_NOT_EXIST);
     }
-
+    console.log(recommendation);
     return response(baseResponse.SUCCESS, recommendation);
 };
 
@@ -50,3 +50,15 @@ exports.recommendationCheck = async function(boardIdx){
 
     return recommendationRow;
 };
+
+// 유저 status 값 조회
+exports.userStatusCheck = async function (userIdx) {
+    const connection = await pool.getConnection(async (conn) => conn);
+  
+    const userRow = await boardDao.selectUserIdx(connection, userIdx);
+    if (!userRow) return errResponse(baseResponse.USER_ID_NOT_MATCH);
+  
+    connection.release();
+  
+    return;
+  };

@@ -1,24 +1,27 @@
+// 쿼리문의 writerIdx == userIdx
+
 // 전체 추천 게시글 조회
-// writerIdx == nickname(mysql에 nickname을 writerIdx로 작성함)
-async function selectRecommendations(connection, userIdx){
+async function selectRecommendations(connection, boardType){
+    console.log(boardType);
     const selectRecommendationListQuery = `
-        SELECT idx, fileUrl, category, title, content, writerIdx, boardType
-        FROM Board;
+        SELECT fileUrl, category, title, content
+        FROM Board
+        WHERE status = "POSTED" and boardType = ?;
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationListQuery,
-        userIdx
+        boardType
     );
-
+    
     return recommendationListRow;
 }
 
 // 추천 게시글 상세 조회
 async function selectRecommendation(connection, boardIdx){
     const selectRecommendationQuery = `
-        SELECT idx, fileUrl, category, title, content, writerIdx
+        SELECT fileUrl, category, title, content
         FROM Board
-        WHERE userIdx = ?;
+        WHERE idx = ?;
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationQuery,
@@ -31,8 +34,8 @@ async function selectRecommendation(connection, boardIdx){
 // 추천 게시글 생성
 async function insertRecommendation(connection, postRecommendationInfoParams){
     const insertRecommendationQuery = `
-        INSERT INTO Board (writerIdx, fileUrl, title, content, category)
-        VALUE (?, ?, ?, ?, ?);
+        INSERT INTO Board (writerIdx, nickname, fileUrl, title, content, category, boardType, status)
+        VALUE (?, ?, ?, ?, ?, ?, ?, "POSTED");
         `;
     const insertRecommendationRow = await connection.query(
         insertRecommendationQuery,
@@ -47,7 +50,7 @@ async function deleteRecommendation(connection, boardIdx){
     const deleteRecommendationQuery = `
         DELETED Board
         SET status = "DELETED"
-        WHERE userIdx = ?;
+        WHERE writerIdx = ?;
         `;
     const deleteRecommendationRow = await connection.query(
         deleteRecommendationQuery,
@@ -60,9 +63,9 @@ async function deleteRecommendation(connection, boardIdx){
 // 추천 게시글 존재 유무 확인 
 async function existRecommendation(connection, boardIdx){
     const existRecommendationQuery = `
-        SELECT writerIdx
+        SELECT idx
         FROM Board
-        WHERE userIdx = ?;
+        WHERE writerIdx = ?;
         `;
     const [recommendationRow] = await connection.query(
         existRecommendationQuery,
@@ -77,7 +80,7 @@ async function updateRecommendation(connection, postRecommendationInfoParams){
     const updateRecommendationQuery = `
         UPDATE Board
         SET status = "EDITED"
-        WHERE userIdx = ?;
+        WHERE writerIdx = ?;
         `;
     const updateRecommendationRow = await connection.query(
         updateRecommendationQuery,
