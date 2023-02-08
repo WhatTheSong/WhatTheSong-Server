@@ -1,3 +1,4 @@
+
 const { pool } = require("../../../config/database");
 
 const storageDao = require("./storageDao");
@@ -9,4 +10,3 @@ exports.getS3URL = async (boardIdx)=>{
 
     return url[0];
 }
-1
