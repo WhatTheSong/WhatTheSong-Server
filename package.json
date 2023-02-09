@@ -15,7 +15,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "apple-auth": "^1.0.7",
     "aws-sdk": "^2.1311.0",
     "axios": "^1.2.3",
     "bcrypt": "^5.1.0",
