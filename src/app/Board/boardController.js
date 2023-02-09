@@ -98,12 +98,14 @@ exports.deleteRecommendation = async function(req, res){
      */
     const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
-
+    //console.log(loggedInUserIdx);
+    //console.log(boardIdx);
     if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
 
     const deleteRecommendationResponse = await boardService.deleteRecommendation(
         parseInt(boardIdx),
+        //parseInt(loggedInUserIdx)
         loggedInUserIdx
     );
 
@@ -119,14 +121,21 @@ exports.patchRecommendation = async function(req, res){
      * Path Variable: boardIdx
      */
     const {boardIdx} = req.params;
-    const loggedInUserIdx = req.verifiedToken.userIdx;
-
+    //const loggedInUserIdx = req.verifiedToken.userIdx;
+    //const fileUrl = await boardService.patchRecommendation(fileUrl);
+    //const title = await boardService.patchRecommendation(title);
+    //const content = await boardService.patchRecommendation(content);
+    //const category = await boardService.patchRecommendation(category);
+    const {fileUrl, title, content, category} = req.body;
     if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
     
     const patchRecommendationResponse = await boardService.patchRecommendation(
         parseInt(boardIdx),
-        loggedInUserIdx
+        fileUrl,
+        title,
+        content,
+        category
     );
 
     return res.send(patchRecommendationResponse);

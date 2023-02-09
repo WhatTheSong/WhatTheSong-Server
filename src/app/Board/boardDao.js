@@ -48,7 +48,7 @@ async function insertRecommendation(connection, postRecommendationInfoParams){
 // 추천 게시글 삭제
 async function deleteRecommendation(connection, boardIdx){
     const deleteRecommendationQuery = `
-        DELETED Board
+        UPDATE Board
         SET status = "DELETED"
         WHERE idx = ?;
         `;
@@ -65,7 +65,7 @@ async function existRecommendation(connection, boardIdx){
     const existRecommendationQuery = `
         SELECT idx
         FROM Board
-        WHERE writerIdx = ?;
+        WHERE idx = ?;
         `;
     const [recommendationRow] = await connection.query(
         existRecommendationQuery,
@@ -76,15 +76,15 @@ async function existRecommendation(connection, boardIdx){
 }
 
 // 추천 게시글 수정
-async function updateRecommendation(connection, postRecommendationInfoParams){
+async function updateRecommendation(connection, patchRecommendationInfoParams){
     const updateRecommendationQuery = `
         UPDATE Board
-        SET status = "EDITED"
+        SET fileUrl = ?, title = ?, content = ?, category = ?
         WHERE writerIdx = ?;
         `;
     const updateRecommendationRow = await connection.query(
         updateRecommendationQuery,
-        postRecommendationInfoParams
+        patchRecommendationInfoParams
     );
 
     return updateRecommendationRow[0];
