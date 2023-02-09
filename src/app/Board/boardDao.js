@@ -50,7 +50,7 @@ async function deleteRecommendation(connection, boardIdx){
     const deleteRecommendationQuery = `
         DELETED Board
         SET status = "DELETED"
-        WHERE writerIdx = ?;
+        WHERE idx = ?;
         `;
     const deleteRecommendationRow = await connection.query(
         deleteRecommendationQuery,

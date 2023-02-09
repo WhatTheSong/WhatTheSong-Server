@@ -54,10 +54,12 @@ exports.postRecommendation = async function(
     
 };
 
-exports.deleteRecommendation = async function(userIdx, boardIdx){
+exports.deleteRecommendation = async function(boardIdx, userIdx){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
         const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
+        console.log(userIdx);
+        console.log(isExistRecommendation);
         // 추천 게시글 존재 확인
         if(!isExistRecommendation){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
@@ -66,7 +68,7 @@ exports.deleteRecommendation = async function(userIdx, boardIdx){
         if(userIdx !== isExistRecommendation.userIdx){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
-
+        
         await connection.beginTransaction();
         const deleteRecommendationResult = await boardDao.deleteRecommendation(
             connection,

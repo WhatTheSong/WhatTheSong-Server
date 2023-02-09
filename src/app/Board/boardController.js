@@ -94,7 +94,7 @@ exports.getRecommendation = async function(req, res){
  */
 exports.deleteRecommendation = async function(req, res){
     /**
-     * Path Variable: userIdx, boardIdx
+     * Path Variable: boardIdx
      */
     const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
@@ -116,7 +116,7 @@ exports.deleteRecommendation = async function(req, res){
  */
 exports.patchRecommendation = async function(req, res){
     /**
-     * Path Variable: userIdx, boardIdx
+     * Path Variable: boardIdx
      */
     const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
