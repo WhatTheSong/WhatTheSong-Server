@@ -124,4 +124,21 @@ module.exports = {
     code: 4002,
     message: "소셜 로그인 서버 에러",
   },
+  STORAGE_FILE_EMPTY: {
+    isSuccess: false,
+    code:2201,
+    message:"파일이 없습니다.",
+  },
+  STORAGE_S3_ERROR:{
+    isSuccess: false,
+    code:2202,
+    message:"S3 버켓 업로드에 실패했습니다.",
+  },
+  BOARDIDX_EMPTY:{
+    isSuccess: false,
+    code:2203,
+    message:"게시글 idx를 입력해주세요.",
+  }
+
 };
+
