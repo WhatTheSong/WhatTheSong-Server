@@ -42,7 +42,8 @@ exports.updateComment = async function (req,res) {
     const postIdx = parseInt(req.params.postIdx);
     const commentIdx = parseInt(req.params.idx);
     const commentContent = req.body.content;
-    const updateCommentResponse = await commentService.updateComment(postIdx, commentIdx, commentContent);
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+    const updateCommentResponse = await commentService.updateComment(postIdx, commentIdx, commentContent,loggedInUserIdx);
     return res.send(updateCommentResponse);
 }
 
@@ -55,7 +56,8 @@ exports.updateComment = async function (req,res) {
 exports.deleteComment = async function (req,res) {
     const postIdx = parseInt(req.params.postIdx);
     const commentIdx = parseInt(req.params.idx);
-    const deleteCommentResponse = await commentService.deleteComment(postIdx, commentIdx);
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+    const deleteCommentResponse = await commentService.deleteComment(postIdx, commentIdx,loggedInUserIdx);
     return res.send(deleteCommentResponse);
 }
 
@@ -102,7 +104,8 @@ exports.updateReply = async function (req,res) {
     const parentIdx = parseInt(req.params.parentIdx);
     const replyIdx = parseInt(req.params.idx);
     const replyContent = req.body.content;
-    const updateReplyResponse = await commentService.updateReply(postIdx, parentIdx, replyIdx, replyContent);
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+    const updateReplyResponse = await commentService.updateReply(postIdx, parentIdx, replyIdx, replyContent,loggedInUserIdx);
     return res.send(updateReplyResponse);
 }
 
@@ -116,6 +119,7 @@ exports.deleteReply = async function (req,res) {
     const postIdx = parseInt(req.params.postIdx);
     const parentIdx = parseInt(req.params.parentIdx);
     const replyIdx = parseInt(req.params.idx);
-    const deleteReplyResponse = await commentService.deleteReply(postIdx, parentIdx, replyIdx);
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+    const deleteReplyResponse = await commentService.deleteReply(postIdx, parentIdx, replyIdx, loggedInUserIdx);
     return res.send(deleteReplyResponse);
 }

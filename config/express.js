@@ -31,5 +31,6 @@ module.exports = function () {
   require("../src/app/Notification/notificationRoute")(app);
   require("../src/app/Comment/commentRouter")(app);
   require("../src/app/Storage/storageRoute")(app);
+  require("../src/app/Like/likeRouter")(app);
   return app;
 };

@@ -24,13 +24,15 @@ exports.createComment = async function(postIdx, commentContent, nickname, logged
 }
 
 // 댓글 수정
-exports.updateComment = async function(postIdx, commentIdx, commentContent) {
+exports.updateComment = async function(postIdx, commentIdx, commentContent,loggedInUserIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const commentRow = await commentProvider.getOneComment(postIdx, commentIdx)
     console.log(commentRow, "확인")
-    if (commentRow.length === 0) {
+    if (commentRow.length === 0) { // 해당 댓글이 존재하지 않을 경우
         connection.release();
         return errResponse(baseResponse.COMMENT_COMMENTIDX_NOT_EXIST);
+    } else if (loggedInUserIdx !== commentRow[0].userIdx) { // 작성자와 일치하지 않을 경우
+        return errResponse(baseResponse.COMMENT_WRITER_NOT_MATCHED);
     } else {
         try {
             await connection.beginTransaction();
@@ -48,13 +50,15 @@ exports.updateComment = async function(postIdx, commentIdx, commentContent) {
 }
 
 // 댓글 삭제
-exports.deleteComment = async function(postIdx, commentIdx) {
+exports.deleteComment = async function(postIdx, commentIdx,loggedInUserIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const commentRow = await commentProvider.getOneComment(postIdx, commentIdx)
     console.log(commentRow, "확인")
-    if (commentRow.length === 0) {
+    if (commentRow.length === 0) { // 해당 댓글이 존재하지 않을 경우
         connection.release();
         return errResponse(baseResponse.COMMENT_COMMENTIDX_NOT_EXIST);
+    } else if (loggedInUserIdx !== commentRow[0].userIdx) { // 작성자와 일치하지 않을 경우
+        return errResponse(baseResponse.COMMENT_WRITER_NOT_MATCHED);
     } else {
         try {
             await connection.beginTransaction();
@@ -86,13 +90,15 @@ exports.createReply = async function(postIdx, parentIdx, replyContent, nickname,
 }
 
 // 답글 수정
-exports.updateReply = async function(postIdx, parentIdx, replyIdx, replyContent) {
+exports.updateReply = async function(postIdx, parentIdx, replyIdx, replyContent,loggedInUserIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const replyRow = await commentProvider.getOneReply(postIdx, parentIdx, replyIdx)
     console.log(replyRow, "확인")
     if (replyRow.length === 0) {
         connection.release();
         return errResponse(baseResponse.COMMENT_REPLYIDX_NOT_EXIST);
+    } else if (loggedInUserIdx !== replyRow[0].userIdx) { // 작성자와 일치하지 않을 경우
+        return errResponse(baseResponse.REPLY_WRITER_NOT_MATCHED);
     } else {
         try {
             await connection.beginTransaction();
@@ -109,13 +115,15 @@ exports.updateReply = async function(postIdx, parentIdx, replyIdx, replyContent)
 }
 
 // 답글 삭제
-exports.deleteReply = async function(postIdx, parentIdx, replyIdx) {
+exports.deleteReply = async function(postIdx, parentIdx, replyIdx, loggedInUserIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
     const replyRow = await commentProvider.getOneReply(postIdx, parentIdx, replyIdx)
     console.log(replyRow, "확인")
     if (replyRow.length === 0) {
         connection.release();
         return errResponse(baseResponse.COMMENT_REPLYIDX_NOT_EXIST);
+    } else if (loggedInUserIdx !== replyRow[0].userIdx) { // 작성자와 일치하지 않을 경우
+        return errResponse(baseResponse.REPLY_WRITER_NOT_MATCHED);
     } else {
         try {
             await connection.beginTransaction();
