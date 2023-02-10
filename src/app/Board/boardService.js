@@ -57,7 +57,7 @@ exports.postRecommendation = async function(
 exports.deleteRecommendation = async function(boardIdx, userIdx){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx); // 해당 게시글id가 존재하는지 확인을 하는 변수
+        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
         //console.log(userIdx); // writerIdx
         //console.log(isExistRecommendation[0]);
         // 추천 게시글 존재 확인

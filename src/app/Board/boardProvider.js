@@ -56,4 +56,4 @@ exports.userStatusCheck = async function (userIdx) {
     connection.release();
   
     return;
-  };
+};
