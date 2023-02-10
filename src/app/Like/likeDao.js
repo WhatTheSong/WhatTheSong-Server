@@ -1,7 +1,7 @@
 async function selectLikes(connection, postIdx) {
     const selectLikeListQuery = `
         SELECT userIdx
-        FROM Like
+        FROM ThumbsUp
         WHERE postIdx = ?;`;
     const [likeRows] = await connection.query(selectLikeListQuery, postIdx);
     console.log(likeRows)
@@ -11,7 +11,7 @@ async function selectLikes(connection, postIdx) {
 async function selectOneLike(connection, postIdx, userIdx) {
     const selectOneLikeQuery = `
         SELECT userIdx
-        FROM Like
+        FROM ThumbsUp
         WHERE postIdx = ? AND userIdx = ?;`;
     const [like] = await connection.query(selectOneLikeQuery, [postIdx, userIdx]);
     console.log(like)
@@ -20,7 +20,7 @@ async function selectOneLike(connection, postIdx, userIdx) {
 
 async function insertLike(connection, postIdx, userIdx) {
     const insertLikeQuery = `
-        INSERT INTO Like(postIdx, userIdx)
+        INSERT INTO ThumbsUp(postIdx, userIdx)
         VALUES (?,?);`;
     await connection.query(insertLikeQuery, [postIdx, userIdx]);
     return;
@@ -28,7 +28,7 @@ async function insertLike(connection, postIdx, userIdx) {
 
 async function deleteLike(connection, postIdx, userIdx) {
     const deleteLikeQuery = `
-        DELETE FROM Like
+        DELETE FROM ThumbsUp
         WHERE postIdx = ? AND userIdx = ?;`;
     await connection.query(deleteLikeQuery, [postIdx, userIdx]);
     return;
