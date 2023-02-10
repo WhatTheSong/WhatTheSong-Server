@@ -1,11 +1,7 @@
 const {pool} = require("../../../config/database");
 const {logger} = require("../../../config/winston");
 const baseResponse = require("../../../config/baseResponseStatus");
-const {
-    response,
-    errResponse,
-} = require("../../../config/response");
-
+const {response, errResponse} = require("../../../config/response");
 const boardDao = require("./boardDao");
 
 // 전체 추천 게시글 조회
@@ -14,7 +10,7 @@ exports.retrieveRecommendationList = async function(boardType){
 
     const recommendationList = await boardDao.selectRecommendations(connection, boardType);
     connection.release();
-    console.log(recommendationList);
+    //console.log(recommendationList);
     return response(
         baseResponse.SUCCESS,
         recommendationList
@@ -26,13 +22,13 @@ exports.retrieveRecommendation = async function(boardIdx){
     const connection = await pool.getConnection(async (conn) => conn);
 
     const recommendation = await boardDao.selectRecommendation(connection, boardIdx);
-    console.log(recommendation);
+    //console.log(recommendation);
     connection.release();
     
     if(!recommendation){
         return errResponse(baseResponse.BOARD_NOT_EXIST);
     }
-    console.log(recommendation);
+
     return response(baseResponse.SUCCESS, recommendation);
 };
 
