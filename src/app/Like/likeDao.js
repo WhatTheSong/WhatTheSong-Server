@@ -1,39 +1,41 @@
-async function selectLike(connection, postIdx) {
+async function selectLikes(connection, postIdx) {
     const selectLikeListQuery = `
         SELECT userIdx
-        FROM Like
+        FROM ThumbsUp
         WHERE postIdx = ?;`;
     const [likeRows] = await connection.query(selectLikeListQuery, postIdx);
+    console.log(likeRows)
     return likeRows;
 }
 
 async function selectOneLike(connection, postIdx, userIdx) {
     const selectOneLikeQuery = `
         SELECT userIdx
-        FROM Like
+        FROM ThumbsUp
         WHERE postIdx = ? AND userIdx = ?;`;
-    const [like] = await connection.query(selectOneLikeQuery, postIdx, userIdx);
+    const [like] = await connection.query(selectOneLikeQuery, [postIdx, userIdx]);
+    console.log(like)
     return like;
 }
 
 async function insertLike(connection, postIdx, userIdx) {
     const insertLikeQuery = `
-        INSERT INTO Like(postIdx, userIdx)
+        INSERT INTO ThumbsUp(postIdx, userIdx)
         VALUES (?,?);`;
-    await connection.query(insertLikeQuery, postIdx, userIdx);
+    await connection.query(insertLikeQuery, [postIdx, userIdx]);
     return;
 }
 
 async function deleteLike(connection, postIdx, userIdx) {
     const deleteLikeQuery = `
-        DELETE FROM Like
+        DELETE FROM ThumbsUp
         WHERE postIdx = ? AND userIdx = ?;`;
-    await connection.query(deleteLikeQuery, postIdx, userIdx);
+    await connection.query(deleteLikeQuery, [postIdx, userIdx]);
     return;
 }
 
 module.exports = {
-    selectLike,
+    selectLikes,
     selectOneLike,
     insertLike,
     deleteLike

@@ -115,6 +115,32 @@ module.exports = {
     code: 3104,
     message: "해당 답글이 존재하지 않습니다.",
   },
+  COMMENT_WRITER_NOT_MATCHED: {
+    isSuccess: false,
+    code: 3105,
+    message: "댓글 작성자가 아닙니다.",
+  },
+  REPLY_WRITER_NOT_MATCHED: {
+    isSuccess: false,
+    code: 3106,
+    message: "답글 작성자가 아닙니다.",
+  },
+
+  LIKE_EMPTY: {
+    isSuccess: true,
+    code: 2101,
+    message: "좋아요가 없습니다.",
+  },
+  LIKE_SUCCESS: {
+    isSuccess: true,
+    code: 2102,
+    message: "좋아요를 눌렀습니다.",
+  },
+  LIKE_DELETE: {
+    isSuccess: true,
+    code: 2103,
+    message: "좋아요를 삭제했습니다.",
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: "데이터 베이스 에러" },
