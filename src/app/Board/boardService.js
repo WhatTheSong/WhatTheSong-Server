@@ -57,15 +57,16 @@ exports.postRecommendation = async function(
 exports.deleteRecommendation = async function(boardIdx, userIdx){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
-        console.log(userIdx);
-        console.log(isExistRecommendation.idx);
+        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx); // 해당 게시글id가 존재하는지 확인을 하는 변수
+        console.log(userIdx); // writerIdx
+        //console.log(isExistRecommendation[0].writerIdx);
+        console.log(isExistRecommendation[0]);
         // 추천 게시글 존재 확인
-        if(!isExistRecommendation){
+        if(isExistRecommendation.length === 0){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
-        // 작성자 검증
-        if(userIdx !== isExistRecommendation.idx){
+        // 해당 작성자가 쓴 게시글이 맞는지 검증
+        if(userIdx !== isExistRecommendation[0].writerIdx){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
         
@@ -87,30 +88,30 @@ exports.deleteRecommendation = async function(boardIdx, userIdx){
 };
 
 exports.patchRecommendation = async function(
-    boardIdx,
     fileUrl,
     title,
     content,
-    category
+    category,
+    boardIdx
 ){
     const connection = await pool.getConnection(async (conn) => conn);
     const patchRecommendationInfoParams = [
-        boardIdx,
         fileUrl,
         title,
         content,
         category,
+        boardIdx
     ];
     try {
         const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
         console.log(boardIdx);
-        console.log(isExistRecommendation.idx);
+        console.log(isExistRecommendation[0]);
         // 추천 게시글 존재 확인
-        if(!isExistRecommendation){
+        if(isExistRecommendation.length === 0){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
         // 작성자 검증
-        if(boardIdx !== isExistRecommendation.idx){
+        if(userIdx !== isExistRecommendation.writerIdx){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
 
@@ -130,41 +131,3 @@ exports.patchRecommendation = async function(
         connection.release();
     }
 };
-
-/*
-exports.patchRecommendation = async function(boardIdx, userIdx){
-    const connection = await pool.getConnection(async (conn) => conn);
-    const patchRecommendationInfoParams = [
-        fileUrl,
-        title,
-        content,
-        category,
-    ];
-    try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
-        console.log(userIdx);
-        console.log(isExistRecommendation.idx);
-        // 추천 게시글 존재 확인
-        if(!isExistRecommendation){
-            return errResponse(baseResponse.BOARD_NOT_EXIST);
-        }
-        // 작성자 검증
-        if(userIdx !== isExistRecommendation.idx){
-            return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
-        }
-
-        await connection.beginTransaction();
-        const patchRecommendationResult = await boardDao.updateRecommendation(
-            connection,
-            patchRecommendationInfoParams
-        );
-        await connection.commit();
-        return response(baseResponse.SUCCESS);
-    } catch(err){
-        await connection.rollback();
-        logger.error(`Web - patchRecommendation Service error\n: ${err.content}`);
-        return errResponse(baseResponse.DB_ERROR);
-    } finally{
-        connection.release();
-    }
-};*/

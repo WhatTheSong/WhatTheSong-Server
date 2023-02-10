@@ -2,9 +2,9 @@
 
 // 전체 추천 게시글 조회
 async function selectRecommendations(connection, boardType){
-    console.log(boardType);
+    //console.log(boardType);
     const selectRecommendationListQuery = `
-        SELECT fileUrl, category, title, content
+        SELECT fileUrl, category, title, content, nickname
         FROM Board
         WHERE status = "POSTED" and boardType = ?;
         `;
@@ -12,16 +12,16 @@ async function selectRecommendations(connection, boardType){
         selectRecommendationListQuery,
         boardType
     );
-    
+    console.log(boardType);
     return recommendationListRow;
 }
 
 // 추천 게시글 상세 조회
 async function selectRecommendation(connection, boardIdx){
     const selectRecommendationQuery = `
-        SELECT fileUrl, category, title, content
+        SELECT fileUrl, category, title, content, nickname
         FROM Board
-        WHERE idx = ?;
+        WHERE status = "POSTED" and idx = ?;
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationQuery,
@@ -63,11 +63,11 @@ async function deleteRecommendation(connection, boardIdx){
 // 추천 게시글 존재 유무 확인 
 async function existRecommendation(connection, boardIdx){
     const existRecommendationQuery = `
-        SELECT idx
+        SELECT writerIdx
         FROM Board
-        WHERE idx = ?;
+        WHERE status = "POSTED" and idx = ?;
         `;
-    const [recommendationRow] = await connection.query(
+    const recommendationRow = await connection.query(
         existRecommendationQuery,
         boardIdx
     );
@@ -80,7 +80,7 @@ async function updateRecommendation(connection, patchRecommendationInfoParams){
     const updateRecommendationQuery = `
         UPDATE Board
         SET fileUrl = ?, title = ?, content = ?, category = ?
-        WHERE writerIdx = ?;
+        WHERE idx = ?;
         `;
     const updateRecommendationRow = await connection.query(
         updateRecommendationQuery,

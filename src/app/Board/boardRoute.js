@@ -3,7 +3,7 @@ module.exports = function(app){
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     // 전체 노래 추천 게시글 조회 API
-    app.get("/app/boards/:boardType/contents", jwtMiddleware, board.getRecommendations);
+    app.get("/app/boards/:boardType/contents", board.getRecommendations);
 
     // 추천 게시글 작성 API
     app.post(
@@ -15,7 +15,6 @@ module.exports = function(app){
     // 추천 게시글 상세 조회 API
     app.get(
         "/app/boards/:boardType/contents/:boardIdx",
-        jwtMiddleware,
         board.getRecommendation
     );
 

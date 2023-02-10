@@ -9,7 +9,7 @@ const {
 const boardDao = require("./boardDao");
 
 // 전체 추천 게시글 조회
-exports.retrieveRecommendationList = async function(nickname, boardType){
+exports.retrieveRecommendationList = async function(boardType){
     const connection = await pool.getConnection(async (conn) => conn);
 
     const recommendationList = await boardDao.selectRecommendations(connection, boardType);
@@ -17,7 +17,6 @@ exports.retrieveRecommendationList = async function(nickname, boardType){
     console.log(recommendationList);
     return response(
         baseResponse.SUCCESS,
-        nickname,
         recommendationList
     );
 };

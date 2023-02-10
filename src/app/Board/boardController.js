@@ -15,12 +15,11 @@ exports.getRecommendations = async function(req, res){
      * Middleware: boardType, nickname
      */
 
-    const loggedInUserIdx = req.verifiedToken.userIdx;
-    const nickname = userProvider.getNickname(loggedInUserIdx);
+    //const loggedInUserIdx = req.verifiedToken.userIdx;
+    //const nickname = userProvider.getNickname(loggedInUserIdx);
     const boardType = req.params.boardType;
 
     const recommendationListResult = await boardProvider.retrieveRecommendationList(
-        nickname,
         boardType
     );
 
@@ -76,7 +75,7 @@ exports.postRecommendation = async function(req, res){
  */
 exports.getRecommendation = async function(req, res){
     /**
-     * Path Variable: boardIdx
+     * Path Variable: boardType, boardIdx
      */
     const {boardIdx} = req.params;
     
@@ -94,7 +93,7 @@ exports.getRecommendation = async function(req, res){
  */
 exports.deleteRecommendation = async function(req, res){
     /**
-     * Path Variable: boardIdx
+     * Path Variable: boardType, boardIdx
      */
     const {boardIdx} = req.params;
     const loggedInUserIdx = req.verifiedToken.userIdx;
@@ -118,24 +117,19 @@ exports.deleteRecommendation = async function(req, res){
  */
 exports.patchRecommendation = async function(req, res){
     /**
-     * Path Variable: boardIdx
+     * Path Variable: boardType, boardIdx
      */
     const {boardIdx} = req.params;
-    //const loggedInUserIdx = req.verifiedToken.userIdx;
-    //const fileUrl = await boardService.patchRecommendation(fileUrl);
-    //const title = await boardService.patchRecommendation(title);
-    //const content = await boardService.patchRecommendation(content);
-    //const category = await boardService.patchRecommendation(category);
     const {fileUrl, title, content, category} = req.body;
     if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
     
     const patchRecommendationResponse = await boardService.patchRecommendation(
-        parseInt(boardIdx),
         fileUrl,
         title,
         content,
-        category
+        category,
+        parseInt(boardIdx)
     );
 
     return res.send(patchRecommendationResponse);
