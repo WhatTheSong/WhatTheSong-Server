@@ -139,6 +139,11 @@ module.exports = {
     code: 2253,
     message: "신고 코드가 잘못 되었습니다.",
   },
+  REPORT_TYPE_WRONG: {
+    isSuccess: false,
+    code: 2254,
+    message: "신고 유형이 잘못 되었습니다.",
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
