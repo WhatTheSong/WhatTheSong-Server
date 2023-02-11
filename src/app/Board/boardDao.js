@@ -12,7 +12,7 @@ async function selectRecommendations(connection, boardType){
         selectRecommendationListQuery,
         boardType
     );
-    console.log(boardType);
+    //console.log(boardType);
     return recommendationListRow;
 }
 
@@ -97,7 +97,7 @@ async function selectUserIdx(connection, userIdx){
         FROM User
         WHERE idx = ?;
     `;
-    console.log(userIdx);
+    //console.log(userIdx);
     const [userRow] = await connection.query(selectUserIdxQuery, userIdx);
 
     return userRow[0];

@@ -33,7 +33,7 @@ exports.postRecommendation = async function(
         category,
         boardType,
     ];
-    console.log("유저아이디",postRecommendationInfoParams);
+    //console.log("유저아이디",postRecommendationInfoParams);
     try{
         await connection.beginTransaction();
         const postRecommendationResult = await boardDao.insertRecommendation(
@@ -45,7 +45,7 @@ exports.postRecommendation = async function(
     }catch(err){
         await connection.rollback();
         logger.error(`Web - postRecommendation Service error\n: ${err.content}`);
-        console.log(err);
+        //console.log(err);
 
         return errResponse(baseResponse.DB_ERROR);
     }finally{
@@ -57,10 +57,9 @@ exports.postRecommendation = async function(
 exports.deleteRecommendation = async function(boardIdx, userIdx){
     const connection = await pool.getConnection(async (conn) => conn);
     try {
-        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx); // 해당 게시글id가 존재하는지 확인을 하는 변수
-        console.log(userIdx); // writerIdx
-        //console.log(isExistRecommendation[0].writerIdx);
-        console.log(isExistRecommendation[0]);
+        const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
+        //console.log(userIdx); // writerIdx
+        //console.log(isExistRecommendation[0]);
         // 추천 게시글 존재 확인
         if(isExistRecommendation.length === 0){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
@@ -80,7 +79,7 @@ exports.deleteRecommendation = async function(boardIdx, userIdx){
     } catch(err){
         await connection.rollback();
         logger.error(`Web - deleteRecommendation Service error\n: ${err.content}`);
-        console.log(err);
+        //console.log(err);
         return errResponse(baseResponse.DB_ERROR);
     } finally{
         connection.release();
@@ -92,7 +91,8 @@ exports.patchRecommendation = async function(
     title,
     content,
     category,
-    boardIdx
+    boardIdx,
+    loggedInUserIdx
 ){
     const connection = await pool.getConnection(async (conn) => conn);
     const patchRecommendationInfoParams = [
@@ -100,18 +100,19 @@ exports.patchRecommendation = async function(
         title,
         content,
         category,
-        boardIdx
+        boardIdx,
+        loggedInUserIdx
     ];
     try {
         const isExistRecommendation = await boardProvider.recommendationCheck(boardIdx);
-        console.log(boardIdx);
-        console.log(isExistRecommendation[0]);
+        //console.log(loggedInUserIdx);
+        //console.log(isExistRecommendation[0]);
         // 추천 게시글 존재 확인
         if(isExistRecommendation.length === 0){
             return errResponse(baseResponse.BOARD_NOT_EXIST);
         }
         // 작성자 검증
-        if(userIdx !== isExistRecommendation.writerIdx){
+        if(loggedInUserIdx !== isExistRecommendation[0].writerIdx){
             return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
         }
 
@@ -125,7 +126,7 @@ exports.patchRecommendation = async function(
     } catch(err){
         await connection.rollback();
         logger.error(`Web - patchRecommendation Service error\n: ${err.content}`);
-        console.log(err);
+        //console.log(err);
         return errResponse(baseResponse.DB_ERROR);
     } finally{
         connection.release();

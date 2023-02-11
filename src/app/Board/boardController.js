@@ -12,11 +12,8 @@ const {response, errResponse} = require("../../../config/response");
 exports.getRecommendations = async function(req, res){
     /**
      * Path Variable: boardType
-     * Middleware: boardType, nickname
      */
 
-    //const loggedInUserIdx = req.verifiedToken.userIdx;
-    //const nickname = userProvider.getNickname(loggedInUserIdx);
     const boardType = req.params.boardType;
 
     const recommendationListResult = await boardProvider.retrieveRecommendationList(
@@ -33,15 +30,12 @@ exports.getRecommendations = async function(req, res){
 exports.postRecommendation = async function(req, res){
     /**
      * Body: fileUrl, content, category, title
-     * jwt: userIdx
-     * Middleware: userIdx, nickname
      */
 
     const {fileUrl, content, category, title} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
     const {boardType}= req.params
     const nickname = await userProvider.getNickname(loggedInUserIdx);
-    //const userIdx = parseInt(req.params.userIdx);
 
     // 형식적 validation 처리
     if(!fileUrl){
@@ -104,7 +98,6 @@ exports.deleteRecommendation = async function(req, res){
 
     const deleteRecommendationResponse = await boardService.deleteRecommendation(
         parseInt(boardIdx),
-        //parseInt(loggedInUserIdx)
         loggedInUserIdx
     );
 
@@ -121,6 +114,8 @@ exports.patchRecommendation = async function(req, res){
      */
     const {boardIdx} = req.params;
     const {fileUrl, title, content, category} = req.body;
+    const loggedInUserIdx = req.verifiedToken.userIdx;
+
     if(!boardIdx)
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
     
@@ -129,7 +124,8 @@ exports.patchRecommendation = async function(req, res){
         title,
         content,
         category,
-        parseInt(boardIdx)
+        parseInt(boardIdx),
+        loggedInUserIdx
     );
 
     return res.send(patchRecommendationResponse);
