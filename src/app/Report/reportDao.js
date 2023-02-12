@@ -24,3 +24,17 @@ exports.selectReportInfoByReportIdx = async function (
   );
   return reportInfoRow;
 };
+
+// 누적 신고 개수 조회
+exports.countReportInfo = async function (connection, countReportInfoParams) {
+  const countReportInfoQuery = `
+                SELECT COUNT(?)
+                FROM Report
+                WHERE reportIdx = ? AND reportType = ?;
+                 `;
+  const [count] = await connection.query(
+    countReportInfoQuery,
+    countReportInfoParams
+  );
+  return count;
+};

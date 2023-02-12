@@ -11,3 +11,14 @@ exports.getReportInfo = async function (selectReportInfoByReportIdxParams) {
 
   return reportInfoResult[0];
 };
+
+exports.countReportInfo = async function (countReportInfoParams) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const reportInfoResult = await reportDao.countReportInfo(
+    connection,
+    countReportInfoParams
+  );
+  connection.release();
+
+  return reportInfoResult[0];
+};

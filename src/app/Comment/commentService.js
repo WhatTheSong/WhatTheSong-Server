@@ -221,3 +221,21 @@ exports.deleteReply = async function (
     }
   }
 };
+
+// 댓글(답글) 블라인드 처리
+exports.commentBlind = async function () {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const commentBlindParams = [isAllow, userIdx];
+    await userDao.updateUserNotification(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - commentBlind Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

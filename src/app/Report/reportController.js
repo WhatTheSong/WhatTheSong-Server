@@ -56,7 +56,15 @@ exports.report = async function (req, res) {
     }
   }
 
-  //TODO: 트리거 이용해서 신고개수 체크하기
+  // 누적 신고개수 체크
+  const countReportInfoParams = [reportIdx, reportIdx, reportType];
+  const countReportInfo = (
+    await reportProvider.countReportInfo(countReportInfoParams)
+  )[`COUNT('${reportIdx}')`];
+
+  if (countReportInfo + 1 >= 5) {
+    // 신고개수 5개 누적 시 자등으로 게시글(댓글) 삭제 처리
+  }
 
   // 신고 데이터 DB 저장
   const reportResponse = await reportService.insertReportInfo(
