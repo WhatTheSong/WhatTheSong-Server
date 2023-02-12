@@ -12,13 +12,11 @@ const { response, errResponse } = require("../../../config/response");
  */
 exports.postVoiceToS3 = async(req,res) =>{
     const f = req.files.uploadFiles;
-    // const postId =  req.body.postId;
-    if (!f) return res.status(404).send(errResponse(baseResponse.STORAGE_FILE_EMPTY));
-
+    const boardIdx =req.params.boardIdx
     const result = await storageService.uploadFileToS3(f);
     if(!result) return res.status(404).send(response(baseResponse.STORAGE_S3_ERROR));
-    const testId = 1;
-    const daoResult = await storageService.postS3URL(testId,result);
+
+    const daoResult = await storageService.postS3URL(boardIdx,result);
     return res.status(200).send(response(baseResponse.SUCCESS,true));
 }
 /**
@@ -34,5 +32,22 @@ exports.getVoiceByIdx = async(req,res) =>{
 
     const daoResult = await storageProvider.getS3URL(boardIdx);
 
+    if(!daoResult.length) res.status(400).send(errResponse(baseResponse.INVALID_BOARDIDX))
+
     return res.status(200).send(response(baseResponse.SUCCESS, daoResult));
 }
+/**
+ * API No. 3
+ * API Name : 게시글 idx로 음성파일 변경하기.
+ * [GET] /app/storage/voice/:boardIdx
+ * body :
+ */
+exports.updateVoiceByIdx = async(req,res) =>{
+    const f = req.files.uploadFiles;
+    const boardIdx = req.params.boardIdx
+    const result = await storageService.uploadFileToS3(f);
+    if(!result) return res.status(404).send(response(baseResponse.STORAGE_S3_ERROR));
+
+    const daoResult = await storageService.updateS3URL(boardIdx, result);
+    return res.status(200).send(response(baseResponse.SUCCESS, daoResult));
+};
