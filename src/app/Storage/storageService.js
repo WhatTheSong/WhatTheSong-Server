@@ -63,4 +63,24 @@ exports.postS3URL = async (postId,url) =>{
     }
 };
 
+exports.updateS3URL = async (boardIdx, url)=>{
+    const connection = await pool.getConnection(async (conn) => conn);
+    try {
+        await connection.beginTransaction();
+        const updateS3URLParams = [url, boardIdx];
+        await storageDao.updateS3URL(
+            connection,
+            updateS3URLParams
+        );
+        await connection.commit();
+    }catch (err){
+        connection.rollback();
+        logger.error(
+            `App - postS3URL Service error\n: ${err.message}`
+        );
+        throw new Error(baseResponse.DB_ERROR);
+    } finally {
+        connection.release();
+    }
+}
 
