@@ -197,4 +197,23 @@ module.exports = {
     code: 3106,
     message: "답글 작성자가 아닙니다.",
   },
+
+  BOARDIDX_EMPTY:{
+    isSuccess: false,
+    code:2203,
+    message:"게시글 idx를 입력해주세요.",
+  },
+  INVALID_BOARDIDX:{
+    isSuccess: false,
+    code:2204,
+    message:"게시글 idx를 정수로 입력해주세요",
+  },
+
+  FILE_SIZE_EXCEED:{
+    isSuccess: false,
+    code :2005,
+    message:"파일의 용량 제한은 15MB입니다."
+  }
+
+
 };
