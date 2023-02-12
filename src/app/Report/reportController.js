@@ -12,16 +12,16 @@ exports.report = async function (req, res) {
 
   // validation 체크
   if (!reportType) {
-    return res.send(response(baseResponse.REPORT_TYPE_IS_EMPTY));
+    return res.send(errResponse(baseResponse.REPORT_TYPE_IS_EMPTY));
   }
   if (!reportCode && reportCode != 0) {
-    return res.send(response(baseResponse.REPORT_CODE_IS_EMPTY));
+    return res.send(errResponse(baseResponse.REPORT_CODE_IS_EMPTY));
   }
   if (reportCode > 5) {
-    return res.send(response(baseResponse.REPORT_IDX_WRONG));
+    return res.send(errResponse(baseResponse.REPORT_IDX_WRONG));
   }
   if (!reportIdx) {
-    return res.send(response(baseResponse.REPORT_IDX_IS_EMPTY));
+    return res.send(errResponse(baseResponse.REPORT_IDX_IS_EMPTY));
   }
 
   // 신고 대상이 존재하는지 확인
@@ -29,18 +29,33 @@ exports.report = async function (req, res) {
   if (reportType == "article") {
     isValidIdx = await boardProvider.retrieveRecommendation(reportIdx);
     if (!isValidIdx.isSuccess) {
-      return res.send(response(baseResponse.REPORT_TARGET_NOT_EXIST));
+      return res.send(errResponse(baseResponse.REPORT_TARGET_NOT_EXIST));
     }
   } else if (reportType == "comment" || reportType == "reply") {
     isValidIdx = await commentProvider.getCommentOrReplyByIdx(reportIdx);
     if (!isValidIdx) {
-      return res.send(response(baseResponse.REPORT_TARGET_NOT_EXIST));
+      return res.send(errResponse(baseResponse.REPORT_TARGET_NOT_EXIST));
     }
   } else {
-    return res.send(response(baseResponse.REPORT_TYPE_WRONG));
+    return res.send(errResponse(baseResponse.REPORT_TYPE_WRONG));
   }
 
-  //TODO: 이전에 신고한 적이 있는지 확인
+  // 이전에 신고한 적이 있는지 확인
+  const selectReportInfoByReportIdxParams = [reporterIdx, reportIdx];
+  const isExistReportInfo = await reportProvider.getReportInfo(
+    selectReportInfoByReportIdxParams
+  );
+  if (isExistReportInfo) {
+    if (isExistReportInfo.reportType == "article") {
+      return res.send(errResponse(baseResponse.REPORT_ARTICLE_DUPLICATE));
+    } else if (
+      isExistReportInfo.reportType == "comment" ||
+      isExistReportInfo.reportType == "reply"
+    ) {
+      return res.send(errResponse(baseResponse.REPORT_COMMENT_DUPLICATE));
+    }
+  }
+
   //TODO: 트리거 이용해서 신고개수 체크하기
 
   // 신고 데이터 DB 저장

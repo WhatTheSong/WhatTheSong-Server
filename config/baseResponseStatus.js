@@ -231,6 +231,16 @@ module.exports = {
     code: 3251,
     message: "신고 대상을 찾을 수 없습니다.",
   },
+  REPORT_ARTICLE_DUPLICATE: {
+    isSuccess: false,
+    code: 3252,
+    message: "이미 신고한 게시글입니다.",
+  },
+  REPORT_COMMENT_DUPLICATE: {
+    isSuccess: false,
+    code: 3253,
+    message: "이미 신고한 댓글입니다.",
+  },
 
   //Connection, Transaction 등의 서버 오류
   DB_ERROR: { isSuccess: false, code: 4000, message: "데이터 베이스 에러" },
