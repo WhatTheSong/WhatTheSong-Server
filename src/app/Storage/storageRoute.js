@@ -6,6 +6,7 @@ module.exports = (app) => {
     const storage = require("./storageController");
     const { storageVoiceMiddleware, storageImageMiddleware} = require("./storageMiddleware");
     // 음성 업로드
+<<<<<<< HEAD
     app.post("/app/storages/voice/:boardIdx", storageVoiceMiddleware, storage.postVoiceToS3);
 
     // 음성 수정
@@ -20,4 +21,10 @@ module.exports = (app) => {
     // url 조회
     app.get("/app/storages/:boardIdx", storage.getVoiceByIdx);
 
+=======
+    app.post("/app/storage/voice", storage.postVoiceToS3);
+
+    // 파일 경로 조회
+    app.get("/app/storage/voice/:boardIdx", storage.getVoiceByIdx);
+>>>>>>> d76f63e (feat: 조회 기능 라우터 추가)
 }
