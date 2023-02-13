@@ -12,12 +12,26 @@ const selectS3URLByPostId = async (connection, boardIdx)=>{
 }
 
 const updateS3URL = async (connection, updateS3URLParams)=>{
-    const updateS3UrlQuery = `UPDATE Storage SET url = ? WHERE boardIdx = ? ;`;
+    const updateS3UrlQuery = `UPDATE Storage SET url = ? WHERE boardIdx = ? AND fileType = 'audio';`;
     return await connection.query(updateS3UrlQuery, updateS3URLParams);
+}
+
+const insertImageS3URL = async (connection, postImageS3URLParams) =>{
+    const insertImageS3UrlQuery = `INSERT INTO Storage(boardIdx, url, fileType) VALUES (?,?,'image');`;
+    await connection.query(insertImageS3UrlQuery, postImageS3URLParams)
+    return true;
+}
+
+const updateImageS3URL = async (connection, updateImageS3URLParams) =>{
+    const insertImageS3UrlQuery = `UPDATE Storage SET url = ? WHERE boardIdx = ? AND fileType = 'image';`;
+    await connection.query(insertImageS3UrlQuery, updateImageS3URLParams)
+    return true;
 }
 
 module.exports ={
     insertS3URL,
     selectS3URLByPostId,
-    updateS3URL
+    updateS3URL,
+    insertImageS3URL,
+    updateImageS3URL
 }
