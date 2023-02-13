@@ -212,7 +212,18 @@ module.exports = {
   FILE_SIZE_EXCEED:{
     isSuccess: false,
     code :2005,
-    message:"파일의 용량 제한은 15MB입니다."
+    message:"오디오 파일의 용량 제한은 15MB입니다."
+  },
+  IMAGE_FILE_SIZE_EXCEED:{
+    isSuccess: false,
+    code:2007,
+    message:"사진 파일의 용량 제한은 10MB입니다."
+  },
+
+  INVALID_FILETYPE:{
+    isSuccess: false,
+    code : 2006,
+    message:"파일유형이 옳지 않습니다."
   }
 
 

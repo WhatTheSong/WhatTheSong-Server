@@ -46,10 +46,9 @@ exports.postS3URL = async (postId,url) =>{
     const connection = await pool.getConnection(async (conn) => conn);
     try {
         await connection.beginTransaction();
-        const postS3URLParams = [postId, url];
         await storageDao.insertS3URL(
             connection,
-            postS3URLParams
+            [postId, url]
         );
         await connection.commit();
     }catch (err){
@@ -67,10 +66,9 @@ exports.updateS3URL = async (boardIdx, url)=>{
     const connection = await pool.getConnection(async (conn) => conn);
     try {
         await connection.beginTransaction();
-        const updateS3URLParams = [url, boardIdx];
         await storageDao.updateS3URL(
             connection,
-            updateS3URLParams
+            [url, boardIdx]
         );
         await connection.commit();
     }catch (err){
@@ -84,3 +82,42 @@ exports.updateS3URL = async (boardIdx, url)=>{
     }
 }
 
+exports.postImageS3URL = async (boardIdx,url) =>{
+    const connection = await pool.getConnection(async (conn) => conn);
+    try {
+        await connection.beginTransaction();
+        await storageDao.insertImageS3URL(
+            connection,
+            [boardIdx, url]
+        );
+        await connection.commit();
+    }catch (err){
+        connection.rollback();
+        logger.error(
+            `App - postS3URL Service error\n: ${err.message}`
+        );
+        throw new Error(baseResponse.DB_ERROR);
+    } finally {
+        connection.release();
+    }
+};
+
+exports.updateImageS3URL = async(boardIdx,url)=>{
+    const connection = await pool.getConnection(async (conn) => conn);
+    try {
+        await connection.beginTransaction();
+        await storageDao.updateImageS3URL(
+            connection,
+            [url, boardIdx]
+        );
+        await connection.commit();
+    }catch (err){
+        connection.rollback();
+        logger.error(
+            `App - postS3URL Service error\n: ${err.message}`
+        );
+        throw new Error(baseResponse.DB_ERROR);
+    } finally {
+        connection.release();
+    }
+}
