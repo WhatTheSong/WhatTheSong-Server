@@ -104,6 +104,18 @@ async function updateUserNotification(connection, updateUserInfoParams) {
   return;
 }
 
+// 유저 id로 닉네임 조회 
+async function selectNickname(connection, userIdx) { 
+  const selectNicknameQuery = `
+    SELECT name
+    FROM User
+    WHERE idx = ?; 
+    `;
+  const nickname = await connection.query(selectNicknameQuery, userIdx); 
+  //console.log(nickname) 
+  return nickname[0]; 
+}
+
 module.exports = {
   selectUserOauthId,
   insertUserInfo,
@@ -113,4 +125,5 @@ module.exports = {
   selectUserRefreshToken,
   updateUserNickname,
   updateUserNotification,
+  selectNickname,
 };

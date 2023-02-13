@@ -10,10 +10,10 @@ module.exports = function(router) {
     router.post('/app/posts/:postIdx/comments', jwtMiddleware, ctrl.createComment);
 
     // 3. 댓글 수정
-    router.patch('/app/posts/:postIdx/comments/:idx', ctrl.updateComment);
+    router.patch('/app/posts/:postIdx/comments/:idx', jwtMiddleware, ctrl.updateComment);
 
     // 4. 댓글 삭제
-    router.delete('/app/posts/:postIdx/comments/:idx', ctrl.deleteComment);
+    router.delete('/app/posts/:postIdx/comments/:idx', jwtMiddleware, ctrl.deleteComment);
 
 
     /* 답글 관련 API */
@@ -24,9 +24,9 @@ module.exports = function(router) {
     router.post('/app/posts/:postIdx/comments/:parentIdx/replies', jwtMiddleware, ctrl.createReply);
 
     // 7. 답글 수정
-    router.patch('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', ctrl.updateReply);
+    router.patch('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', jwtMiddleware, ctrl.updateReply);
 
     // 8. 답글 삭제
-    router.delete('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', ctrl.deleteReply);
+    router.delete('/app/posts/:postIdx/comments/:parentIdx/replies/:idx', jwtMiddleware, ctrl.deleteReply);
 
 }
