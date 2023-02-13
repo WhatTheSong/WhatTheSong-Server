@@ -15,9 +15,6 @@ exports.uploadFileToS3 = async (uploadFile)=>{
         region: process.env.AWS_REGION
     });
 
-    // 업로드파일을 base64데이터로 변환
-    const base64data = new  Buffer.alloc(uploadFile.size, uploadFile,'binary');
-
     // S3업로드를 위한 객체생성
     const s3 = new AWS.S3();
 
@@ -27,7 +24,7 @@ exports.uploadFileToS3 = async (uploadFile)=>{
             const params = {
                 Bucket: process.env.AWS_BUCKET_NAME,
                 Key: uploadFile.name,
-                Body: file
+                Body: file.data
             };
 
             s3.upload(params, (err, data) => {
@@ -39,7 +36,7 @@ exports.uploadFileToS3 = async (uploadFile)=>{
             });
         });
     };
-    return await uploadToS3(base64data);
+    return await uploadToS3(uploadFile);
 }
 
 exports.postS3URL = async (postId,url) =>{
