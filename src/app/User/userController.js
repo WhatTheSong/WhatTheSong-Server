@@ -15,6 +15,9 @@ const { refreshToken } = require("firebase-admin/app");
 exports.oauthLogin = async function (req, res) {
   const { oauthId, nickname, email } = req.body;
   const { oauthProvider } = req.query;
+  if (!oauthId || !nickname || !email) {
+    return res.send(errResponse(baseResponse.USER_VALUE_IS_EMPTY));
+  }
   if (oauthProvider != "kakao" && oauthProvider != "apple") {
     return res.send(errResponse(baseResponse.USER_PROVIDER_IS_EMPTY));
   }

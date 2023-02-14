@@ -45,6 +45,11 @@ module.exports = {
     code: 2005,
     message: "소셜 로그인 종류 값이 잘못되었습니다.",
   },
+  USER_VALUE_IS_EMPTY: {
+    isSuccess: false,
+    code: 2006,
+    message: "Body 값을 다시 확인해주세요.",
+  },
 
   BOARD_NOT_EXIST: {
     isSuccess: false,
