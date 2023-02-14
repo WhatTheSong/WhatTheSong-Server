@@ -17,7 +17,7 @@ module.exports = function (app) {
 
   // post: accessToken 재발급
   app
-    .route("/app/token")
+    .route("/app/users/token")
     .get(jwtMiddleware, user.check)
     .post(user.reissuanceToken);
 };
