@@ -6,7 +6,7 @@ async function selectRecommendations(connection, boardType){
     const selectRecommendationListQuery = `
         SELECT fileUrl, category, title, content, nickname
         FROM Board
-        WHERE status = "POSTED" and boardType = ?;
+        WHERE status = "posted" and boardType = ?;
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationListQuery,
@@ -21,7 +21,7 @@ async function selectRecommendation(connection, boardIdx){
     const selectRecommendationQuery = `
         SELECT fileUrl, category, title, content, nickname
         FROM Board
-        WHERE status = "POSTED" and idx = ?;
+        WHERE status = "posted" and idx = ?;
         `;
     const [recommendationListRow] = await connection.query(
         selectRecommendationQuery,
@@ -35,7 +35,7 @@ async function selectRecommendation(connection, boardIdx){
 async function insertRecommendation(connection, postRecommendationInfoParams){
     const insertRecommendationQuery = `
         INSERT INTO Board (writerIdx, nickname, fileUrl, title, content, category, boardType, status)
-        VALUE (?, ?, ?, ?, ?, ?, ?, "POSTED");
+        VALUE (?, ?, ?, ?, ?, ?, ?, "posted");
         `;
     const insertRecommendationRow = await connection.query(
         insertRecommendationQuery,
@@ -49,7 +49,7 @@ async function insertRecommendation(connection, postRecommendationInfoParams){
 async function deleteRecommendation(connection, boardIdx){
     const deleteRecommendationQuery = `
         UPDATE Board
-        SET status = "DELETED"
+        SET status = "deleted"
         WHERE idx = ?;
         `;
     const deleteRecommendationRow = await connection.query(
@@ -65,7 +65,7 @@ async function existRecommendation(connection, boardIdx){
     const existRecommendationQuery = `
         SELECT writerIdx
         FROM Board
-        WHERE status = "POSTED" and idx = ?;
+        WHERE status = "posted" and idx = ?;
         `;
     const recommendationRow = await connection.query(
         existRecommendationQuery,
