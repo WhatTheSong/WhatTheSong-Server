@@ -67,6 +67,7 @@ async function existRecommendation(connection, boardIdx){
         FROM Board
         WHERE status = "posted" and idx = ?;
         `;
+    //console.log(boardIdx);
     const recommendationRow = await connection.query(
         existRecommendationQuery,
         boardIdx

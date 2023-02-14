@@ -51,7 +51,7 @@ exports.userStatusCheck = async function (userIdx) {
     const connection = await pool.getConnection(async (conn) => conn);
   
     const userRow = await boardDao.selectUserIdx(connection, userIdx);
-    if (!userRow) return errResponse(baseResponse.USER_ID_NOT_MATCH);
+    if (!userRow) return errResponse(baseResponse.BOARD_USERIDX_NOT_MATCH);
   
     connection.release();
   
