@@ -1,7 +1,9 @@
 const reportProvider = require("./reportProvider");
 const reportService = require("./reportService");
 const boardProvider = require("../Board/boardProvider");
+const boardService = require("../Board/boardService");
 const commentProvider = require("../Comment/commentProvider");
+const commentService = require("../Comment/commentService");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
 
@@ -62,8 +64,18 @@ exports.report = async function (req, res) {
     await reportProvider.countReportInfo(countReportInfoParams)
   )[`COUNT('${reportIdx}')`];
 
+  // 신고개수 5개 누적 시 자등으로 게시글(댓글) 삭제 처리
   if (countReportInfo + 1 >= 5) {
-    // 신고개수 5개 누적 시 자등으로 게시글(댓글) 삭제 처리
+    let response;
+    if (reportType == "article") {
+      response = await boardService.automaticallyDelete(reportIdx);
+    } else if (reportType == "comment" || reportType == "reply") {
+      response = await commentService.automaticallyDelete(reportIdx);
+    }
+
+    if (!response.isSuccess) {
+      return res.send(response);
+    }
   }
 
   // 신고 데이터 DB 저장

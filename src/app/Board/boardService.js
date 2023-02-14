@@ -135,3 +135,22 @@ exports.patchRecommendation = async function (
     connection.release();
   }
 };
+
+// 신고 누적 시 자동 게시글 삭제
+exports.automaticallyDelete = async function (targetIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    await boardDao.deleteRecommendation(connection, targetIdx);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - automaticallyDeletePost Service error\n: ${err.message}`
+    );
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

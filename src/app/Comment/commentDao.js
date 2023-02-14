@@ -158,6 +158,16 @@ async function selectCommentOrReply(connection, idx) {
   return resultRow[0];
 }
 
+// 신고 누적 시 자동으로 댓글 삭제
+async function automaticallyDelete(connection, idx) {
+  const automaticallyDeleteQuery = `
+        UPDATE Comment
+        SET status = 'deleted'
+        WHERE idx = ?;`;
+  await connection.query(automaticallyDeleteQuery, idx);
+  return;
+}
+
 module.exports = {
   selectComment,
   selectOneComment,
@@ -170,4 +180,5 @@ module.exports = {
   updateReply,
   deleteReply,
   selectCommentOrReply,
+  automaticallyDelete,
 };
