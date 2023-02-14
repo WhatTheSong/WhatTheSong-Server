@@ -20,9 +20,5 @@ module.exports = (app) => {
     // url 조회
     app.get("/app/storages/:boardIdx", storage.getVoiceByIdx);
 
-    app.post("/app/storage/voice", storage.postVoiceToS3);
-
-    // 파일 경로 조회
-    app.get("/app/storage/voice/:boardIdx", storage.getVoiceByIdx);
 
 }
