@@ -19,7 +19,7 @@ exports.postVoiceToS3 = async(req,res) =>{
     if(!result) return res.status(404).send(response(baseResponse.STORAGE_S3_ERROR));
 
     const daoResult = await storageService.postS3URL(boardIdx,result);
-    return res.status(200).send(response(baseResponse.SUCCESS,true));
+    return res.status(200).send(response(baseResponse.SUCCESS,result));
 }
 /**
  * API No. 2
@@ -67,7 +67,7 @@ exports.postImageToS3 = async(req,res)=>{
     if(!result) return res.status(404).send(response(baseResponse.STORAGE_S3_ERROR));
 
     const daoResult = await storageService.postImageS3URL(boardIdx,result);
-    return res.status(200).send(response(baseResponse.SUCCESS, daoResult));
+    return res.status(200).send(response(baseResponse.SUCCESS, result));
 }
 /**
  * API No. 5
