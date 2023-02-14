@@ -131,17 +131,17 @@ module.exports = {
   },
   REPORT_IDX_IS_EMPTY: {
     isSuccess: false,
-    code: 2252,
+    code: 2253,
     message: "신고 대상 idx를 입력해주세요.",
   },
   REPORT_IDX_WRONG: {
     isSuccess: false,
-    code: 2253,
+    code: 2254,
     message: "신고 코드가 잘못 되었습니다.",
   },
   REPORT_TYPE_WRONG: {
     isSuccess: false,
-    code: 2254,
+    code: 2255,
     message: "신고 유형이 잘못 되었습니다.",
   },
 
