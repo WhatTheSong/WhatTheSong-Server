@@ -221,3 +221,22 @@ exports.deleteReply = async function (
     }
   }
 };
+
+// 신고 누적 시 자동 댓글 삭제
+exports.automaticallyDelete = async function (targetIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    await commentDao.automaticallyDelete(connection, targetIdx);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - automaticallyDeleteComment Service error\n: ${err.message}`
+    );
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};

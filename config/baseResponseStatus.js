@@ -118,6 +118,52 @@ module.exports = {
     code: 2203,
     message: "게시글 idx를 입력해주세요.",
   },
+  INVALID_BOARDIDX: {
+    isSuccess: false,
+    code: 2204,
+    message: "게시글 idx를 정수로 입력해주세요",
+  },
+  FILE_SIZE_EXCEED: {
+    isSuccess: false,
+    code: 2205,
+    message: "오디오 파일의 용량 제한은 15MB입니다.",
+  },
+  IMAGE_FILE_SIZE_EXCEED: {
+    isSuccess: false,
+    code: 2206,
+    message: "사진 파일의 용량 제한은 10MB입니다.",
+  },
+  INVALID_FILETYPE: {
+    isSuccess: false,
+    code: 2207,
+    message: "파일유형이 옳지 않습니다.",
+  },
+
+  REPORT_TYPE_IS_EMPTY: {
+    isSuccess: false,
+    code: 2251,
+    message: "신고 유형을 입력해주세요.",
+  },
+  REPORT_CODE_IS_EMPTY: {
+    isSuccess: false,
+    code: 2252,
+    message: "신고 코드를 입력해주세요.",
+  },
+  REPORT_IDX_IS_EMPTY: {
+    isSuccess: false,
+    code: 2253,
+    message: "신고 대상 idx를 입력해주세요.",
+  },
+  REPORT_IDX_WRONG: {
+    isSuccess: false,
+    code: 2254,
+    message: "신고 코드가 잘못 되었습니다.",
+  },
+  REPORT_TYPE_WRONG: {
+    isSuccess: false,
+    code: 2255,
+    message: "신고 유형이 잘못 되었습니다.",
+  },
 
   // Response error
   SIGNUP_REDUNDANT_EMAIL: {
@@ -151,6 +197,7 @@ module.exports = {
     code: 3006,
     message: "탈퇴 된 계정입니다. 고객센터에 문의해주세요.",
   },
+
   TOKEN_REFRESH_NOT_MATCHED: {
     isSuccess: false,
     code: 3047,
@@ -187,6 +234,7 @@ module.exports = {
     code: 3104,
     message: "해당 답글이 존재하지 않습니다.",
   },
+
   COMMENT_WRITER_NOT_MATCHED: {
     isSuccess: false,
     code: 3105,
@@ -198,33 +246,28 @@ module.exports = {
     message: "답글 작성자가 아닙니다.",
   },
 
-  BOARDIDX_EMPTY:{
+  REPORT_TARGET_NOT_EXIST: {
     isSuccess: false,
-    code:2203,
-    message:"게시글 idx를 입력해주세요.",
+    code: 3251,
+    message: "신고 대상을 찾을 수 없습니다.",
   },
-  INVALID_BOARDIDX:{
+  REPORT_ARTICLE_DUPLICATE: {
     isSuccess: false,
-    code:2204,
-    message:"게시글 idx를 정수로 입력해주세요",
+    code: 3252,
+    message: "이미 신고한 게시글입니다.",
   },
-
-  FILE_SIZE_EXCEED:{
+  REPORT_COMMENT_DUPLICATE: {
     isSuccess: false,
-    code :2005,
-    message:"오디오 파일의 용량 제한은 15MB입니다."
-  },
-  IMAGE_FILE_SIZE_EXCEED:{
-    isSuccess: false,
-    code:2007,
-    message:"사진 파일의 용량 제한은 10MB입니다."
+    code: 3253,
+    message: "이미 신고한 댓글입니다.",
   },
 
-  INVALID_FILETYPE:{
+  //Connection, Transaction 등의 서버 오류
+  DB_ERROR: { isSuccess: false, code: 4000, message: "데이터 베이스 에러" },
+  SERVER_ERROR: { isSuccess: false, code: 4001, message: "서버 에러" },
+  SOCIAL_LOGIN_SERVER_ERROR: {
     isSuccess: false,
-    code : 2006,
-    message:"파일유형이 옳지 않습니다."
-  }
-
-
+    code: 4002,
+    message: "소셜 로그인 서버 에러",
+  },
 };
