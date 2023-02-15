@@ -29,6 +29,7 @@ exports.getRecommendations = async function(req, res){
  */
 exports.postRecommendation = async function(req, res){
     /**
+     * Path Variable: boardType
      * Body: fileUrl, content, category, title
      */
 
@@ -111,14 +112,25 @@ exports.deleteRecommendation = async function(req, res){
 exports.patchRecommendation = async function(req, res){
     /**
      * Path Variable: boardType, boardIdx
+     * Body: fileUrl, content, category, title
      */
     const {boardIdx} = req.params;
     const {fileUrl, title, content, category} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
 
-    if(!boardIdx)
+    // 형식적 validation 처리
+    if(!boardIdx){
         return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
-    
+    } else if(!fileUrl){
+        return res.send(errResponse(baseResponse.BOARD_FILEURL_EMPTY));
+    } else if(!title){
+        return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
+    } else if(!content){
+        return res.send(errResponse(baseResponse.BOARD_CONTENT_EMPTY));
+    } else if(!category){
+        return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
+    } 
+
     const patchRecommendationResponse = await boardService.patchRecommendation(
         fileUrl,
         title,
