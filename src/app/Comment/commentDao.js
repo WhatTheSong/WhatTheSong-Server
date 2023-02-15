@@ -9,15 +9,12 @@ async function selectComment(connection, postIdx) {
 }
 
 // 특정 댓글 조회
-async function selectOneComment(connection, postIdx, commentIdx) {
+async function selectOneComment(connection, commentIdx) {
   const selectOneCommentQuery = `
         SELECT comment, userIdx, updatedAt, nickname
         FROM Comment
-        WHERE postIdx = ? AND idx = ? AND status = 'comment';`;
-  const commentRow = await connection.query(selectOneCommentQuery, [
-    postIdx,
-    commentIdx,
-  ]);
+        WHERE idx = ? AND status = 'comment';`;
+  const commentRow = await connection.query(selectOneCommentQuery, commentIdx);
   return commentRow[0];
 }
 
@@ -29,7 +26,6 @@ async function insertComment(
   nickname,
   loggedInUserIdx
 ) {
-  //console.log(loggedInUserIdx)
   const insertCommentQuery = `
         INSERT INTO Comment(postIdx, comment, nickname, status, userIdx)
         VALUES (?,?,?,'comment',?);`;
@@ -43,53 +39,45 @@ async function insertComment(
 }
 
 // 댓글 수정
-async function updateComment(connection, commentContent, postIdx, commentIdx) {
+async function updateComment(connection, commentContent, commentIdx) {
   const updateCommentQuery = `
         UPDATE Comment
         SET comment = ?
-        WHERE postIdx = ? AND idx = ?;`;
+        WHERE idx = ?;`;
   await connection.query(updateCommentQuery, [
     commentContent,
-    postIdx,
     commentIdx,
   ]);
   return;
 }
 
 // 댓글 삭제
-async function deleteComment(connection, postIdx, commentIdx) {
+async function deleteComment(connection, commentIdx) {
   const deleteCommentQuery = `
         UPDATE Comment
         SET status = 'deleted'
-        WHERE postIdx = ? AND idx = ?;`;
-  await connection.query(deleteCommentQuery, [postIdx, commentIdx]);
+        WHERE idx = ?;`;
+  await connection.query(deleteCommentQuery, commentIdx);
   return;
 }
 
 // 답글 목록 조회
-async function selectReply(connection, postIdx, parentIdx) {
+async function selectReply(connection, parentIdx) {
   const selectReplyListQuery = `
         SELECT comment, userIdx, updatedAt, nickname
         FROM Comment
-        WHERE postIdx = ? AND parentIdx = ? AND status = 'reply';`;
-  const [replyRows] = await connection.query(selectReplyListQuery, [
-    postIdx,
-    parentIdx,
-  ]);
+        WHERE parentIdx = ? AND status = 'reply';`;
+  const [replyRows] = await connection.query(selectReplyListQuery, parentIdx);
   return replyRows;
 }
 
 // 특정 답글 조회
-async function selectOneReply(connection, postIdx, parentIdx, replyIdx) {
+async function selectOneReply(connection, replyIdx) {
   const selectOneReplyQuery = `
         SELECT comment, userIdx, updatedAt, nickname
         FROM Comment
-        WHERE postIdx = ? AND parentIdx = ? AND idx = ? AND status = 'reply';`;
-  const replyRow = await connection.query(selectOneReplyQuery, [
-    postIdx,
-    parentIdx,
-    replyIdx,
-  ]);
+        WHERE idx = ? AND status = 'reply';`;
+  const replyRow = await connection.query(selectOneReplyQuery, replyIdx);
   return replyRow[0];
 }
 
@@ -119,30 +107,26 @@ async function insertReply(
 async function updateReply(
   connection,
   commentContent,
-  postIdx,
-  parentIdx,
   replyIdx
 ) {
   const updateCommentQuery = `
         UPDATE Comment
         SET comment = ?
-        WHERE postIdx = ? AND parentIdx = ? AND idx = ?;`;
+        WHERE idx = ?;`;
   await connection.query(updateCommentQuery, [
     commentContent,
-    postIdx,
-    parentIdx,
     replyIdx,
   ]);
   return;
 }
 
 // 답글 삭제
-async function deleteReply(connection, parentIdx, postIdx, replyIdx) {
+async function deleteReply(connection, replyIdx) {
   const deleteReplyQuery = `
         UPDATE Comment
         SET status = 'deleted'
-        WHERE postIdx = ? AND parentIdx = ? AND idx = ?;`;
-  await connection.query(deleteReplyQuery, [postIdx, parentIdx, replyIdx]);
+        WHERE idx = ?;`;
+  await connection.query(deleteReplyQuery, replyIdx);
   return;
 }
 

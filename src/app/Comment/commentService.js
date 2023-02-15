@@ -36,13 +36,12 @@ exports.createComment = async function (
 
 // 댓글 수정
 exports.updateComment = async function (
-  postIdx,
   commentIdx,
   commentContent,
   loggedInUserIdx
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const commentRow = await commentProvider.getOneComment(postIdx, commentIdx);
+  const commentRow = await commentProvider.getOneComment(commentIdx);
   console.log(commentRow, "확인");
   if (commentRow.length === 0) {
     // 해당 댓글이 존재하지 않을 경우
@@ -57,7 +56,6 @@ exports.updateComment = async function (
       await commentDao.updateComment(
         connection,
         commentContent,
-        postIdx,
         commentIdx
       );
       await connection.commit();
@@ -72,10 +70,9 @@ exports.updateComment = async function (
 };
 
 // 댓글 삭제
-exports.deleteComment = async function (postIdx, commentIdx, loggedInUserIdx) {
+exports.deleteComment = async function (commentIdx, loggedInUserIdx) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const commentRow = await commentProvider.getOneComment(postIdx, commentIdx);
-  console.log(commentRow, "확인");
+  const commentRow = await commentProvider.getOneComment(commentIdx);
   if (commentRow.length === 0) {
     // 해당 댓글이 존재하지 않을 경우
     connection.release();
@@ -86,7 +83,7 @@ exports.deleteComment = async function (postIdx, commentIdx, loggedInUserIdx) {
   } else {
     try {
       await connection.beginTransaction();
-      await commentDao.deleteComment(connection, postIdx, commentIdx);
+      await commentDao.deleteComment(connection, commentIdx);
       await connection.commit();
       return response(baseResponse.SUCCESS);
     } catch (err) {
@@ -149,19 +146,12 @@ exports.createReply = async function (
 
 // 답글 수정
 exports.updateReply = async function (
-  postIdx,
-  parentIdx,
   replyIdx,
   replyContent,
   loggedInUserIdx
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const replyRow = await commentProvider.getOneReply(
-    postIdx,
-    parentIdx,
-    replyIdx
-  );
-  console.log(replyRow, "확인");
+  const replyRow = await commentProvider.getOneReply(replyIdx);
   if (replyRow.length === 0) {
     connection.release();
     return errResponse(baseResponse.COMMENT_REPLYIDX_NOT_EXIST);
@@ -174,8 +164,6 @@ exports.updateReply = async function (
       await commentDao.updateReply(
         connection,
         replyContent,
-        postIdx,
-        parentIdx,
         replyIdx
       );
       await connection.commit();
@@ -190,18 +178,11 @@ exports.updateReply = async function (
 
 // 답글 삭제
 exports.deleteReply = async function (
-  postIdx,
-  parentIdx,
   replyIdx,
   loggedInUserIdx
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
-  const replyRow = await commentProvider.getOneReply(
-    postIdx,
-    parentIdx,
-    replyIdx
-  );
-  console.log(replyRow, "확인");
+  const replyRow = await commentProvider.getOneReply(replyIdx);
   if (replyRow.length === 0) {
     connection.release();
     return errResponse(baseResponse.COMMENT_REPLYIDX_NOT_EXIST);
@@ -211,7 +192,7 @@ exports.deleteReply = async function (
   } else {
     try {
       await connection.beginTransaction();
-      await commentDao.deleteReply(connection, parentIdx, postIdx, replyIdx);
+      await commentDao.deleteReply(connection, replyIdx);
       await connection.commit();
       return response(baseResponse.SUCCESS);
     } catch (err) {
