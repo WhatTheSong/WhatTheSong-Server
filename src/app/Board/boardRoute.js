@@ -12,20 +12,20 @@ module.exports = function(app){
         board.postBoard
     );
 
-    // 추천 게시글 상세 조회 API
+    // 게시글 상세 조회 API
     app.get(
         "/app/boards/:boardType/contents/:boardIdx",
-        board.getRecommendation
+        board.getBoard
     );
 
-    // 추천 게시글 삭제 API
+    // 게시글 삭제 API
     app.delete(
         "/app/boards/contents/:boardIdx",
         jwtMiddleware,
         board.deleteBoard
     );
 
-    // 추천 게시글 수정 API
+    // 게시글 수정 API
     app.patch(
         "/app/boards/:boardType/contents/:boardIdx",
         jwtMiddleware,

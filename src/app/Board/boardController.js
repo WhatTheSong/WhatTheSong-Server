@@ -85,7 +85,7 @@ exports.postBoard = async function(req, res){
  * API NAME: 게시글 상세 조회 API
  * [GET]: /app/boards/:boardType/contents/:boardIdx
  */
-exports.getRecommendation = async function(req, res){
+exports.getBoard = async function(req, res){
     /**
      * Path Variable: boardType, boardIdx
      */
