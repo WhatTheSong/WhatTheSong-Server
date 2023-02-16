@@ -51,11 +51,6 @@ module.exports = {
     message: "Body 값을 다시 확인해주세요.",
   },
 
-  BOARD_NOT_EXIST: {
-    isSuccess: false,
-    code: 2051,
-    message: "해당 게시글이 존재하지 않습니다.",
-  },
   BOARD_FILEURL_EMPTY: {
     isSuccess: false,
     code: 2052,
@@ -71,16 +66,6 @@ module.exports = {
     code: 2054,
     message: "카테고리를 선택해주세요.",
   },
-  BOARD_USERIDX_NOT_MATCH: {
-    isSuccess: false,
-    code: 2056,
-    message: "유저 아이디 값을 확인해주세요.",
-  },
-  BOARD_USERIDX_EMPTY: {
-    isSuccess: false,
-    code: 2057,
-    message: "해당 유저가 존재하지 않습니다.",
-  },
   BOARD_TITLE_EMPTY: {
     isSuccess: false,
     code: 2058,
@@ -91,20 +76,50 @@ module.exports = {
     code: 2059,
     message: "닉네임을 입력해주세요.",
   },
+  BOARDTYPE_NOT_EXIST: {
+    isSuccess: false,
+    code: 3051,
+    message: "존재하지 않는 게시판 종류입니다."
+  },
+  BOARD_NOT_EXIST: {
+    isSuccess: false,
+    code: 3052,
+    message: "해당 게시글이 존재하지 않습니다.",
+  },
+  BOARD_USERIDX_NOT_MATCH: {
+    isSuccess: false,
+    code: 3053,
+    message: "유저 아이디 값을 확인해주세요.",
+  },
+  BOARD_USERIDX_EMPTY: {
+    isSuccess: false,
+    code: 3054,
+    message: "해당 유저가 존재하지 않습니다.",
+  },
+  BOARD_USER_BANNED: {
+    isSuccess: false,
+    code: 3055,
+    message: "정지된 회원입니다.",
+  },
+  BOARD_USER_DELETED: {
+    isSuccess: false,
+    code: 3056,
+    message: "탈퇴한 회원입니다.",
+  },
 
   LIKE_EMPTY: {
     isSuccess: true,
-    code: 2101,
+    code: 1000,
     message: "좋아요가 없습니다.",
   },
   LIKE_SUCCESS: {
     isSuccess: true,
-    code: 2102,
+    code: 1000,
     message: "좋아요를 눌렀습니다.",
   },
   LIKE_DELETE: {
     isSuccess: true,
-    code: 2103,
+    code: 1000,
     message: "좋아요를 삭제했습니다.",
   },
 
