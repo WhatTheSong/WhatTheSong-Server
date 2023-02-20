@@ -1,7 +1,7 @@
 // 댓글 목록 조회
 async function selectComment(connection, postIdx) {
   const selectCommentListQuery = `
-        SELECT comment, userIdx, updatedAt, nickname
+        SELECT idx, comment, userIdx, updatedAt, nickname
         FROM Comment
         WHERE postIdx = ? AND status = 'comment';`;
   const [commentRows] = await connection.query(selectCommentListQuery, postIdx);
@@ -19,22 +19,11 @@ async function selectOneComment(connection, commentIdx) {
 }
 
 // 댓글 등록
-async function insertComment(
-  connection,
-  postIdx,
-  commentContent,
-  nickname,
-  loggedInUserIdx
-) {
+async function insertComment(connection, postIdx, commentContent, nickname, loggedInUserIdx) {
   const insertCommentQuery = `
         INSERT INTO Comment(postIdx, comment, nickname, status, userIdx)
         VALUES (?,?,?,'comment',?);`;
-  await connection.query(insertCommentQuery, [
-    postIdx,
-    commentContent,
-    nickname,
-    loggedInUserIdx,
-  ]);
+  await connection.query(insertCommentQuery, [postIdx, commentContent, nickname, loggedInUserIdx]);
   return;
 }
 
@@ -44,10 +33,7 @@ async function updateComment(connection, commentContent, commentIdx) {
         UPDATE Comment
         SET comment = ?
         WHERE idx = ?;`;
-  await connection.query(updateCommentQuery, [
-    commentContent,
-    commentIdx,
-  ]);
+  await connection.query(updateCommentQuery, [commentContent, commentIdx]);
   return;
 }
 
@@ -64,7 +50,7 @@ async function deleteComment(connection, commentIdx) {
 // 답글 목록 조회
 async function selectReply(connection, parentIdx) {
   const selectReplyListQuery = `
-        SELECT comment, userIdx, updatedAt, nickname
+        SELECT idx, comment, userIdx, updatedAt, nickname
         FROM Comment
         WHERE parentIdx = ? AND status = 'reply';`;
   const [replyRows] = await connection.query(selectReplyListQuery, parentIdx);
@@ -82,41 +68,21 @@ async function selectOneReply(connection, replyIdx) {
 }
 
 // 답글 등록
-async function insertReply(
-  connection,
-  postIdx,
-  parentIdx,
-  replyContent,
-  nickname,
-  loggedInUserIdx
-) {
+async function insertReply(connection, postIdx, parentIdx, replyContent, nickname, loggedInUserIdx) {
   const insertReplyQuery = `
         INSERT INTO Comment(postIdx, parentIdx, comment, nickname, status, userIdx)
         VALUES (?,?,?,?,'reply',?);`;
-  await connection.query(insertReplyQuery, [
-    postIdx,
-    parentIdx,
-    replyContent,
-    nickname,
-    loggedInUserIdx,
-  ]);
+  await connection.query(insertReplyQuery, [postIdx, parentIdx, replyContent, nickname, loggedInUserIdx]);
   return;
 }
 
 // 답글 수정
-async function updateReply(
-  connection,
-  commentContent,
-  replyIdx
-) {
+async function updateReply(connection, commentContent, replyIdx) {
   const updateCommentQuery = `
         UPDATE Comment
         SET comment = ?
         WHERE idx = ?;`;
-  await connection.query(updateCommentQuery, [
-    commentContent,
-    replyIdx,
-  ]);
+  await connection.query(updateCommentQuery, [commentContent, replyIdx]);
   return;
 }
 
