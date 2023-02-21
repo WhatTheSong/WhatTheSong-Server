@@ -8,7 +8,7 @@ module.createLikeNotification= async (sender,receiverToken) =>{
     const kafka = new Kafka({
         logLevel: logLevel.DEBUG,
         brokers: [`${host}:9092`],
-        clientId: 'example-producer',
+        clientId: 'notification-producer',
     })
 
     const topic = process.env.KAFKA_TOPICS
@@ -16,17 +16,16 @@ module.createLikeNotification= async (sender,receiverToken) =>{
     const msg = {
         sender:sender,
         receiverToken:receiverToken,
-        type:'like'
     }
     const sendMessage = (msg) => {
         return producer
             .send({
                 topic,
                 compression: CompressionTypes.GZIP,
-                messages: msg
+                messages: [msg]
             })
             .then(console.log)
-            .catch(e => console.error(`[example/producer] ${e.message}`, e))
+            .catch(e => console.error(`[notification/producer] ${e.message}`, e))
     }
 
 
