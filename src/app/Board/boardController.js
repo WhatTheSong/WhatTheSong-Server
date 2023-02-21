@@ -54,22 +54,13 @@ exports.getOneBoard = async function(req, res){
 exports.postBoard = async function(req, res){
     /**
      * Path Variable: boardType
-     * Body: fileUrl, content, category, title
+     * Body: content, category, title
      */
 
-    const {fileUrl, content, category, title} = req.body;
+    const {content, category, title} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
     const boardType = parseInt(req.params.boardType);
     const nickname = await userProvider.getNickname(loggedInUserIdx);
-
-    // 형식적 validation 처리
-    // if(!fileUrl){
-    //     return res.send(errResponse(baseResponse.BOARD_FILEURL_EMPTY));
-    // } else if(!content){
-    //     return res.send(errResponse(baseResponse.BOARD_CONTENT_EMPTY));
-    // } else if(!nickname){
-    //     return res.send(errResponse(baseResponse.BOARD_NICKNAME_EMPTY));
-    // }
     
     // boardType이 0일 때 질문 게시판, 1일 때 추천 게시판
     // 질문 게시판은 제목과 카테고리를 작성하지 않음
@@ -77,21 +68,14 @@ exports.postBoard = async function(req, res){
         const postQuestionResponse = await boardService.postQuestion(
             loggedInUserIdx,
             nickname,
-            fileUrl,
             content,
             boardType,
         );
         return res.send(postQuestionResponse);
     } else if (boardType === 1) { // 추천 게시판
-        // if (!category){
-        //     return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
-        // } else if(!title){
-        //     return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
-        // } 
         const postRecommendationResponse = await boardService.postRecommendation(
             loggedInUserIdx,
             nickname,
-            fileUrl,
             title,
             content,
             category,
@@ -102,7 +86,6 @@ exports.postBoard = async function(req, res){
         return res.send(errResponse(baseResponse.BOARDTYPE_NOT_EXIST))
     }
 };
-
 
 /**
  * API NAME: 게시글 삭제 API
@@ -131,38 +114,22 @@ exports.deleteBoard = async function(req, res){
 exports.patchBoard = async function(req, res){
     /**
      * Path Variable: boardType, boardIdx
-     * Body: fileUrl, content, category, title
+     * Body: content, category, title
      */
     const {boardIdx} = req.params;
-    const {fileUrl, title, content, category} = req.body;
+    const {title, content, category} = req.body;
     const loggedInUserIdx = req.verifiedToken.userIdx;
     const boardType = parseInt(req.params.boardType);
 
-    // 형식적 validation 처리
-    // if(!boardIdx){
-    //     return res.send(errResponse(baseResponse.BOARD_USERIDX_EMPTY));
-    // } else if(!fileUrl){
-    //     return res.send(errResponse(baseResponse.BOARD_FILEURL_EMPTY));
-    // } else if(!content){
-    //     return res.send(errResponse(baseResponse.BOARD_CONTENT_EMPTY));
-    // };
-
     if (boardType === 0){ // 질문 게시판
         const patchQuestionResponse = await boardService.patchQuestion(
-            fileUrl,
             content,
             parseInt(boardIdx),
             loggedInUserIdx
         );
         return res.send(patchQuestionResponse);
     } else if (boardType === 1) { // 추천 게시판
-        // if(!title){
-        //     return res.send(errResponse(baseResponse.BOARD_TITLE_EMPTY));
-        // } else if(!category){
-        //     return res.send(errResponse(baseResponse.BOARD_CATEGORY_EMPTY));
-        // };
         const patchRecommendationResponse = await boardService.patchRecommendation(
-            fileUrl,
             title,
             content,
             category,
