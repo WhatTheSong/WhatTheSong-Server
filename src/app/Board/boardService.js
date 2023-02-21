@@ -4,14 +4,11 @@ const boardProvider = require("./boardProvider");
 const boardDao = require("./boardDao");
 const baseResponse = require("../../../config/baseResponseStatus");
 const { response, errResponse } = require("../../../config/response");
-const res = require("express/lib/response");
-const userProvider = require("../User/userProvider");
 
 // 추천 게시글 등록
 exports.postRecommendation = async function (
   userIdx,
   nickname,
-  fileUrl,
   title,
   content,
   category,
@@ -24,7 +21,6 @@ exports.postRecommendation = async function (
     const postRecommendationInfoParams = [
       userIdx,
       nickname,
-      fileUrl,
       title,
       content,
       category,
@@ -59,7 +55,6 @@ exports.postRecommendation = async function (
 exports.postQuestion = async function (
   userIdx,
   nickname,
-  fileUrl,
   content,
   boardType
 ) {
@@ -70,7 +65,6 @@ exports.postQuestion = async function (
     const postQuestionInfoParams = [
       userIdx,
       nickname,
-      fileUrl,
       content,
       boardType,
     ];
@@ -130,7 +124,6 @@ exports.deleteBoard = async function (boardIdx, userIdx) {
 
 // 추천 게시글 수정
 exports.patchRecommendation = async function (
-  fileUrl,
   title,
   content,
   category,
@@ -139,7 +132,6 @@ exports.patchRecommendation = async function (
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
   const patchRecommendationInfoParams = [
-    fileUrl,
     title,
     content,
     category,
@@ -178,14 +170,12 @@ exports.patchRecommendation = async function (
 
 // 질문 게시글 수정
 exports.patchQuestion = async function (
-  fileUrl,
   content,
   boardIdx,
   loggedInUserIdx
 ) {
   const connection = await pool.getConnection(async (conn) => conn);
   const patchQuestionInfoParams = [
-    fileUrl,
     content,
     boardIdx,
     loggedInUserIdx,
