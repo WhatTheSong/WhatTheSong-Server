@@ -1,5 +1,7 @@
 
- const selectAPNSToken = async (connection,userId)=>{
+const selectAPNSToken = async (connection,userIdx)=>{
+ const selectDeviceTokenByUserIdQuery = `SELECT deviceToken FROM Device WHERE userIdx = ? AND status = 'ONLINE';`
+ return await connection.query(selectDeviceTokenByUserIdQuery, [userIdx]);
 
 }
 

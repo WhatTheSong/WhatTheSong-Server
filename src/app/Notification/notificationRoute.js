@@ -4,10 +4,10 @@ module.exports = (app) => {
     const jwtMiddleware = require('../../../config/jwtMiddleware');
 
     // 1. 알림생성
-    app.get('/app/notifications', notification.testNotifications);
+    app.get('/app/notifications', notification.testNotifications, notification.testDoubleNotifications);
 
     // 1-1. 댓글 알림 생성
-    app.post('/app/notifications/reply', notification.postReplyNotifications);
+    app.post('/app/notifications/reply', notification.createReplyNotifications);
 
     // 1-2. 공감 알림 생성
     // app.post('/app/notification/like', notification.postLikeNotifications);
