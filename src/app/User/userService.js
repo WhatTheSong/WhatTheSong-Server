@@ -1,113 +1,183 @@
-const {logger} = require("../../../config/winston");
-const {pool} = require("../../../config/database");
+/* 공통 */
+const { logger } = require("../../../config/winston");
+const { pool } = require("../../../config/database");
 const userProvider = require("./userProvider");
 const userDao = require("./userDao");
 const baseResponse = require("../../../config/baseResponseStatus");
-const {response} = require("../../../config/response");
-const {errResponse} = require("../../../config/response");
-
+const token = require("../../../config/token");
+const { response } = require("../../../config/response");
+const { errResponse } = require("../../../config/response");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
-const {connect} = require("http2");
+require("dotenv").config();
 
-require('dotenv').config()
-
-// Service: Create, Update, Delete 비즈니스 로직 처리
-
-exports.createUser = async function (email, password, nickname) {
-    try {
-        // 이메일 중복 확인
-        const emailRows = await userProvider.emailCheck(email);
-        if (emailRows.length > 0)
-            return errResponse(baseResponse.SIGNUP_REDUNDANT_EMAIL);
-
-        // 비밀번호 암호화
-        const hashedPassword = await crypto
-            .createHash("sha512")
-            .update(password)
-            .digest("hex");
-
-        const insertUserInfoParams = [email, hashedPassword, nickname];
-
-        const connection = await pool.getConnection(async (conn) => conn);
-
-        const userIdResult = await userDao.insertUserInfo(connection, insertUserInfoParams);
-        console.log(`추가된 회원 : ${userIdResult[0].insertId}`)
-        connection.release();
-        return response(baseResponse.SUCCESS);
-
-
-    } catch (err) {
-        logger.error(`App - createUser Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
-    }
+exports.createUser = async function (
+  refreshToken,
+  profile,
+  selectUserOauthIdParams
+) {
+  const { provider, id, email, displayName } = profile;
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const insertUserInfoParams = [
+      provider,
+      id,
+      email,
+      displayName,
+      refreshToken,
+    ];
+    await userDao.insertUserInfo(connection, insertUserInfoParams);
+    await connection.commit();
+    userRow = await userProvider.oauthIdCheck(selectUserOauthIdParams);
+    return userRow;
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - createUser Service error\n: ${err.message}`);
+    throw new Error(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
 };
 
+exports.updateUserRefreshToken_oauthId = async function (
+  refreshToken,
+  oauthId
+) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
 
-// TODO: After 로그인 인증 방법 (JWT)
-exports.postSignIn = async function (email, password) {
-    try {
-        // 이메일 여부 확인
-        const emailRows = await userProvider.emailCheck(email);
-        if (emailRows.length < 1) return errResponse(baseResponse.SIGNIN_EMAIL_WRONG);
+    const updateUserRefreshTokenParams = [refreshToken, oauthId];
 
-        const selectEmail = emailRows[0].email
-
-        // 비밀번호 확인
-        const hashedPassword = await crypto
-            .createHash("sha512")
-            .update(password)
-            .digest("hex");
-
-        const selectUserPasswordParams = [selectEmail, hashedPassword];
-        const passwordRows = await userProvider.passwordCheck(selectUserPasswordParams);
-
-        if (passwordRows[0].password !== hashedPassword) {
-            return errResponse(baseResponse.SIGNIN_PASSWORD_WRONG);
-        }
-
-        // 계정 상태 확인
-        const userInfoRows = await userProvider.accountCheck(email);
-
-        if (userInfoRows[0].status === "INACTIVE") {
-            return errResponse(baseResponse.SIGNIN_INACTIVE_ACCOUNT);
-        } else if (userInfoRows[0].status === "DELETED") {
-            return errResponse(baseResponse.SIGNIN_WITHDRAWAL_ACCOUNT);
-        }
-
-        console.log(userInfoRows[0].id) // DB의 userId
-
-        //토큰 생성 Service
-        let token = await jwt.sign(
-            {
-                userId: userInfoRows[0].id,
-            }, // 토큰의 내용(payload)
-            process.env.JWTSECRET, // 비밀키
-            {
-                expiresIn: "365d",
-                subject: "userInfo",
-            } // 유효 기간 365일
-        );
-
-        return response(baseResponse.SUCCESS, {'userId': userInfoRows[0].id, 'jwt': token});
-
-    } catch (err) {
-        logger.error(`App - postSignIn Service error\n: ${err.message} \n${JSON.stringify(err)}`);
-        return errResponse(baseResponse.DB_ERROR);
-    }
+    await userDao.updateUserRefreshToken_oauthId(
+      connection,
+      updateUserRefreshTokenParams
+    );
+    await connection.commit();
+    return;
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - updateUserRefreshToken_oauthId Service error\n: ${err.message}`
+    );
+    throw new Error(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
 };
 
-exports.editUser = async function (id, nickname) {
-    try {
-        console.log(id)
-        const connection = await pool.getConnection(async (conn) => conn);
-        const editUserResult = await userDao.updateUserInfo(connection, id, nickname)
-        connection.release();
+const updateUserRefreshToken_userIdx = async function (userIdx, refreshToken) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  const updateUserRefreshTokenParams = [refreshToken, userIdx];
+  try {
+    await connection.beginTransaction();
+    await userDao.updateUserRefreshToken_userIdx(
+      connection,
+      updateUserRefreshTokenParams
+    );
+    await connection.commit();
+    return;
+  } catch (err) {
+    connection.rollback();
+    logger.error(
+      `App - updateUserRefreshToken_userIdx Service error\n: ${err.message}`
+    );
+    throw errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
 
-        return response(baseResponse.SUCCESS);
+// 토큰 재발급 서비스 로직
+exports.reissuanceToken = async function (accessToken, refreshToken) {
+  try {
+    // 액세스 토큰 검증
+    const checkAccessToken = token.verify(accessToken);
 
-    } catch (err) {
-        logger.error(`App - editUser Service error\n: ${err.message}`);
-        return errResponse(baseResponse.DB_ERROR);
+    // 액세스 토큰이 만료되었는지 확인
+    if (checkAccessToken !== "jwt expired") {
+      return errResponse(baseResponse.TOKEN_IS_NOT_EXPIRED);
     }
-}
+    // 액세스 토큰 만료 시, decode를 통해 payload 값 불러오기 가능
+    const decodeAccessToken = jwt.decode(accessToken);
+
+    // 리프레쉬 토큰 검증
+    const checkRefreshToken = token.verify(refreshToken);
+    // 리프레쉬 토큰이 만료되었는지 확인
+    if (checkRefreshToken == "jwt expired") {
+      return errResponse(baseResponse.TOKEN_REFRESH_EXPIRED);
+    }
+    // header로 들어온 리프레쉬 토큰이 유저가 제일 최근에 받은 리프레쉬 토큰과 동일한지 확인 (보안 강화)
+    const { userIdx } = decodeAccessToken;
+    const userRow = await userProvider.getUserRefreshToken(userIdx);
+
+    if (refreshToken !== userRow.refreshToken) {
+      return errResponse(baseResponse.TOKEN_REFRESH_NOT_MATCHED);
+    }
+
+    // 토큰 재발급
+    const accessJwt = token.access({ userIdx });
+    const refreshJwt = token.refresh();
+    await updateUserRefreshToken_userIdx(userIdx, refreshJwt);
+
+    return response(baseResponse.SUCCESS, {
+      userIdx: userIdx,
+      accessToken: accessJwt,
+      refreshToken: refreshJwt,
+    });
+  } catch (err) {
+    return err;
+  }
+};
+
+// Access Token 재발급
+exports.createAccessToken = async function (userIdx) {
+  try {
+    return token.access({ userIdx });
+  } catch (err) {
+    return null;
+  }
+};
+
+// Refresh Token 재발급
+exports.createRefreshToken = async function () {
+  try {
+    return token.refresh();
+  } catch (err) {
+    return null;
+  }
+};
+
+exports.updateUserNickname = async function (nickname, userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const updateUserInfoParams = [nickname, userIdx];
+    await userDao.updateUserNickname(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateUserNickname Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
+
+exports.updateUserNotification = async function (isAllow, userIdx) {
+  const connection = await pool.getConnection(async (conn) => conn);
+  try {
+    await connection.beginTransaction();
+    const updateUserInfoParams = [isAllow, userIdx];
+    await userDao.updateUserNotification(connection, updateUserInfoParams);
+    await connection.commit();
+    return response(baseResponse.SUCCESS);
+  } catch (err) {
+    connection.rollback();
+    logger.error(`App - updateUserNickname Service error\n: ${err.message}`);
+    return errResponse(baseResponse.DB_ERROR);
+  } finally {
+    connection.release();
+  }
+};
