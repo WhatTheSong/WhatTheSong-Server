@@ -6,15 +6,19 @@ const baseResponse = require("../../../config/baseResponseStatus");
 
 // 댓글 목록 조회
 exports.getComments = async function (postIdx) {
-  const connection = await pool.getConnection(async (conn) => conn);
-  const commentListResult = await commentDao.selectComment(connection, postIdx);
-  connection.release();
-  if (commentListResult.length === 0) {
-    // 조회할 댓글 목록이 비어 있을 경우
-    return errResponse(baseResponse.COMMENT_EMPTY);
+  if (!postIdx) {
+    return errResponse(baseResponse.BOARDIDX_EMPTY)
   } else {
-    // 댓글 목록이 존재하는 경우
-    return response(baseResponse.SUCCESS, commentListResult);
+    const connection = await pool.getConnection(async (conn) => conn);
+    const commentListResult = await commentDao.selectComment(connection, postIdx);
+    connection.release();
+    if (commentListResult.length === 0) {
+      // 조회할 댓글 목록이 비어 있을 경우
+      return errResponse(baseResponse.COMMENT_EMPTY);
+    } else {
+      // 댓글 목록이 존재하는 경우
+      return response(baseResponse.SUCCESS, commentListResult);
+    }
   }
 };
 
